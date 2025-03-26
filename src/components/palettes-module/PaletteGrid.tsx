@@ -1,10 +1,10 @@
-import { ColorPalette } from "@/types";
+import { ColorPaletteProps } from "@/types";
 import PaletteCard from "@/components/palettes-module/PaletteCard";
 
 interface PaletteGridProps {
-  palettes: ColorPalette[];
+  palettes: ColorPaletteProps[];
   onDelete: (id: string) => void;
-  onEdit: (id: string, data: Partial<ColorPalette>) => void;
+  onEdit: (id: string, data: Partial<ColorPaletteProps>) => void;
 }
 
 export default function PaletteGrid({

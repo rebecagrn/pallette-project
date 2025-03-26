@@ -1,10 +1,10 @@
-import { ImageProps } from "@/types";
+import { ImageProps, CommentProps } from "@/types";
 import { useState } from "react";
 import { useStore } from "@/store/appStore";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import { Check, Pencil } from "lucide-react";
-
+import { Textarea } from "../ui/textarea";
 interface ImageCardProps {
   image: ImageProps;
   onDelete: (id: string) => void;
@@ -18,11 +18,13 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
 
   const handleAddComment = () => {
     if (!comment.trim()) return;
+    const newComment: CommentProps = {
+      id: crypto.randomUUID(),
+      text: comment,
+      createdAt: new Date(),
+    };
     onEdit(image.id, {
-      comments: [
-        ...image.comments,
-        { id: crypto.randomUUID(), text: comment, createdAt: new Date() },
-      ],
+      comments: [...image.comments, newComment],
     });
     setComment("");
   };
@@ -76,18 +78,15 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
 
         {isEditing && (
           <div className="mt-4 space-y-2">
-            <textarea
+            <Textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="Add a comment..."
               className="w-full p-2 border rounded-md text-sm"
             />
-            <button
-              onClick={handleAddComment}
-              className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
-            >
+            <Button onClick={handleAddComment} className="w-full">
               Add Comment
-            </button>
+            </Button>
           </div>
         )}
       </div>

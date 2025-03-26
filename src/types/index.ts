@@ -3,7 +3,7 @@ export interface ImageProps {
   url: string;
   groupIds: string[];
   tagIds: string[];
-  comments: Comment[];
+  comments: CommentProps[];
   createdAt: Date;
   isFavorite?: boolean;
 }

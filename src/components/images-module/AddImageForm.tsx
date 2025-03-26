@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useStore } from "@/store/appStore";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function AddImageForm() {
   const [url, setUrl] = useState("");
@@ -35,13 +38,13 @@ export default function AddImageForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 mb-8">
       <div>
-        <label
+        <Label
           htmlFor="url"
           className="block text-sm font-medium text-gray-700"
         >
           Image URL
-        </label>
-        <input
+        </Label>
+        <Input
           type="url"
           id="url"
           value={url}
@@ -52,27 +55,27 @@ export default function AddImageForm() {
       </div>
 
       <div>
-        <label
+        <Label
           htmlFor="tags"
           className="block text-sm font-medium text-gray-700"
         >
           Tags
-        </label>
+        </Label>
         <div className="mt-1 flex gap-2">
-          <input
+          <Input
             type="text"
             id="tags"
             onKeyDown={(e) => e.key === "Enter" && handleAddTag(e)}
             className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             placeholder="Add a tag and press Enter"
           />
-          <button
+          <Button
             type="button"
             onClick={handleAddTag}
             className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
           >
             Add
-          </button>
+          </Button>
         </div>
         <div className="mt-2 flex flex-wrap gap-2">
           {selectedTags.map((tagId) => {
@@ -83,7 +86,7 @@ export default function AddImageForm() {
                 className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
               >
                 {tag.name}
-                <button
+                <Button
                   type="button"
                   onClick={() =>
                     setSelectedTags(selectedTags.filter((id) => id !== tag.id))
@@ -91,19 +94,16 @@ export default function AddImageForm() {
                   className="ml-1"
                 >
                   ×
-                </button>
+                </Button>
               </span>
             ) : null;
           })}
         </div>
       </div>
 
-      <button
-        type="submit"
-        className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
-      >
+      <Button type="submit" className="w-full">
         Add Image
-      </button>
+      </Button>
     </form>
   );
 }

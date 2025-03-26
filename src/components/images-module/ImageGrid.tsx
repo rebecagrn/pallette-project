@@ -1,10 +1,10 @@
-import { Image } from "@/types";
+import { ImageProps } from "@/types";
 import ImageCard from "./ImageCard";
 
 interface ImageGridProps {
-  images: Image[];
+  images: ImageProps[];
   onDelete: (id: string) => void;
-  onEdit: (id: string, data: Partial<Image>) => void;
+  onEdit: (id: string, data: Partial<ImageProps>) => void;
 }
 
 export default function ImageGrid({
