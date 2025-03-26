@@ -21,7 +21,7 @@ export function Navigation() {
             <div className="flex-shrink-0 flex items-center">
               <Link
                 href="/"
-                className="text-2xl font-leckerli text-purple-600 hover:text-purple-700 transition-colors"
+                className="text-2xl font-leckerli text-purple-600 transition-colors"
               >
                 BrandZone
               </Link>

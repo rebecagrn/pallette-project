@@ -26,7 +26,7 @@ export default function PalettesPage() {
         <h1 className="text-3xl font-bold">Color Palettes</h1>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-purple-600 hover:bg-purple-700">
+            <Button className="bg-black hover:bg-slate-950">
               <Plus className="mr-2 h-4 w-4" />
               New Palette
             </Button>
@@ -74,11 +74,17 @@ export default function PalettesPage() {
               <CardTitle>Favorite Palettes</CardTitle>
             </CardHeader>
             <CardContent>
-              <PaletteGrid
-                palettes={palettes.filter((p) => p.isFavorite)}
-                onDelete={removePalette}
-                onEdit={updatePalette}
-              />
+              {palettes.length === 0 ? (
+                <div className="flex justify-center items-center h-full">
+                  <p className="text-gray-500">No palettes found</p>
+                </div>
+              ) : (
+                <PaletteGrid
+                  palettes={palettes.filter((p) => p.isFavorite)}
+                  onDelete={removePalette}
+                  onEdit={updatePalette}
+                />
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -89,17 +95,23 @@ export default function PalettesPage() {
               <CardTitle>Recently Created</CardTitle>
             </CardHeader>
             <CardContent>
-              <PaletteGrid
-                palettes={[...palettes]
-                  .sort(
-                    (a, b) =>
-                      new Date(b.createdAt).getTime() -
-                      new Date(a.createdAt).getTime()
-                  )
-                  .slice(0, 10)}
-                onDelete={removePalette}
-                onEdit={updatePalette}
-              />
+              {palettes.length === 0 ? (
+                <div className="flex justify-center items-center h-full">
+                  <p className="text-gray-500">No palettes found</p>
+                </div>
+              ) : (
+                <PaletteGrid
+                  palettes={[...palettes]
+                    .sort(
+                      (a, b) =>
+                        new Date(b.createdAt).getTime() -
+                        new Date(a.createdAt).getTime()
+                    )
+                    .slice(0, 10)}
+                  onDelete={removePalette}
+                  onEdit={updatePalette}
+                />
+              )}
             </CardContent>
           </Card>
         </TabsContent>
