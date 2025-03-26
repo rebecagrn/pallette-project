@@ -1,4 +1,4 @@
-# Pallette Project
+# Palette Project
 
 This is a modern web application built with Next.js, TypeScript, Tailwind CSS, and Shadcn/ui components.
 
