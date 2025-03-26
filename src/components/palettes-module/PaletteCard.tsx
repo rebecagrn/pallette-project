@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Star, StarOff, Pencil, Trash2 } from "lucide-react";
+import { Star, StarOff, Trash2, MessageSquare } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface PaletteCardProps {
   palette: ColorPaletteProps;
@@ -61,9 +62,18 @@ export default function PaletteCard({
             size="icon"
             onClick={handleToggleFavorite}
             className="h-8 w-8"
+            title={
+              palette.isFavorite ? "Remove from favorites" : "Add to favorites"
+            }
           >
             {palette.isFavorite ? (
-              <Star className="h-4 w-4 text-yellow-500" />
+              <Star
+                className={cn(
+                  "h-4 w-4",
+                  palette.isFavorite ? "text-yellow-500" : "text-gray-500"
+                )}
+                fill="currentColor"
+              />
             ) : (
               <StarOff className="h-4 w-4" />
             )}
@@ -72,15 +82,17 @@ export default function PaletteCard({
             variant="ghost"
             size="icon"
             onClick={() => setIsEditing(!isEditing)}
-            className="h-8 w-8"
+            className="h-8 w-8 hover:text-primary"
+            title="Add comment"
           >
-            <Pencil className="h-4 w-4" />
+            <MessageSquare className="h-4 w-4" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => onDelete(palette.id)}
-            className="h-8 w-8 text-destructive"
+            className="h-8 w-8 hover:text-destructive"
+            title="Delete palette"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -129,7 +141,11 @@ export default function PaletteCard({
               onChange={(e) => setComment(e.target.value)}
               placeholder="Add a comment..."
             />
-            <Button onClick={handleAddComment} className="w-full">
+            <Button
+              onClick={handleAddComment}
+              className="w-full bg-black hover:bg-purple-700"
+              title="Send comment"
+            >
               Add Comment
             </Button>
           </div>

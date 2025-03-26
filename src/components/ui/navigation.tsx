@@ -8,7 +8,6 @@ const navigation = [
   { name: "Home", href: "/" },
   { name: "Generator", href: "/generator" },
   { name: "Palettes", href: "/palettes" },
-  { name: "Combinations", href: "/combinations" },
 ];
 
 export function Navigation() {

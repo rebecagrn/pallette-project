@@ -26,7 +26,7 @@ export default function PalettesPage() {
         <h1 className="text-3xl font-bold">Color Palettes</h1>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="bg-purple-600 hover:bg-purple-700">
               <Plus className="mr-2 h-4 w-4" />
               New Palette
             </Button>
@@ -53,11 +53,17 @@ export default function PalettesPage() {
               <CardTitle>Your Palettes</CardTitle>
             </CardHeader>
             <CardContent>
-              <PaletteGrid
-                palettes={palettes}
-                onDelete={removePalette}
-                onEdit={updatePalette}
-              />
+              {palettes.length === 0 ? (
+                <div className="flex justify-center items-center h-full">
+                  <p className="text-gray-500">No palettes found</p>
+                </div>
+              ) : (
+                <PaletteGrid
+                  palettes={palettes}
+                  onDelete={removePalette}
+                  onEdit={updatePalette}
+                />
+              )}
             </CardContent>
           </Card>
         </TabsContent>

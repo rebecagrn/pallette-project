@@ -89,9 +89,11 @@ export default function Home() {
             <Button size="lg" className="bg-purple-600 hover:bg-purple-700">
               Explore color combinations
             </Button>
-            <Button size="lg" variant="outline">
-              Create a custom color palette
-            </Button>
+            <Link href="/generator">
+              <Button size="lg" variant="outline">
+                Create a custom color palette
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
