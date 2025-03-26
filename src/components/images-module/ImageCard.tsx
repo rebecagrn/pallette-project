@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import Image from "next/image";
 import { Check, Pencil } from "lucide-react";
 import { Textarea } from "../ui/textarea";
+
 interface ImageCardProps {
   image: ImageProps;
   onDelete: (id: string) => void;
@@ -30,37 +31,41 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
+    <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
       <div className="relative aspect-square">
-        <Image
-          src={image.url}
-          alt="Reference"
-          className="w-full h-full object-cover"
-        />
+        <Image src={image.url} alt="Reference" className="object-cover" fill />
         <div className="absolute top-2 right-2 flex gap-2">
           <Button
             onClick={() => setIsEditing(!isEditing)}
-            className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
+            variant="secondary"
+            size="icon"
+            className="h-8 w-8 rounded-full"
           >
-            {isEditing ? <Check /> : <Pencil />}
+            {isEditing ? (
+              <Check className="h-4 w-4" />
+            ) : (
+              <Pencil className="h-4 w-4" />
+            )}
           </Button>
           <Button
             onClick={() => onDelete(image.id)}
-            className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
+            variant="destructive"
+            size="icon"
+            className="h-8 w-8 rounded-full"
           >
             ×
           </Button>
         </div>
       </div>
 
-      <div className="p-4">
-        <div className="flex flex-wrap gap-2 mb-2">
+      <div className="p-6 space-y-4">
+        <div className="flex flex-wrap gap-2">
           {image.tagIds.map((tagId) => {
             const tag = tags.find((t) => t.id === tagId);
             return tag ? (
               <span
                 key={tag.id}
-                className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
               >
                 {tag.name}
               </span>
@@ -70,19 +75,19 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
 
         <div className="space-y-2">
           {image.comments.map((comment) => (
-            <div key={comment.id} className="text-sm text-gray-600">
+            <div key={comment.id} className="text-sm text-muted-foreground">
               {comment.text}
             </div>
           ))}
         </div>
 
         {isEditing && (
-          <div className="mt-4 space-y-2">
+          <div className="space-y-4">
             <Textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="Add a comment..."
-              className="w-full p-2 border rounded-md text-sm"
+              className="min-h-[100px]"
             />
             <Button onClick={handleAddComment} className="w-full">
               Add Comment
