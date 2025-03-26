@@ -1,16 +1,33 @@
 import { useState } from "react";
 import { useStore } from "@/store/appStore";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 
-export default function AddPaletteForm() {
+interface AddPaletteFormProps {
+  onSuccess?: () => void;
+}
+
+export default function AddPaletteForm({ onSuccess }: AddPaletteFormProps) {
   const [name, setName] = useState("");
   const [colors, setColors] = useState<string[]>([]);
   const [newColor, setNewColor] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const { addPalette, tags, addTag } = useStore();
+  const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || colors.length === 0) return;
+    if (!name.trim() || colors.length === 0) {
+      toast({
+        title: "Validation Error",
+        description: "Please provide a name and at least one color.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     addPalette({
       name,
@@ -18,11 +35,18 @@ export default function AddPaletteForm() {
       tagIds: selectedTags,
       groupIds: [],
       comments: [],
+      isFavorite: false,
+    });
+
+    toast({
+      title: "Success",
+      description: "Palette created successfully!",
     });
 
     setName("");
     setColors([]);
     setSelectedTags([]);
+    onSuccess?.();
   };
 
   const handleAddColor = (e: React.FormEvent) => {
@@ -49,119 +73,97 @@ export default function AddPaletteForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 mb-8">
-      <div>
-        <label
-          htmlFor="name"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Palette Name
-        </label>
-        <input
-          type="text"
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="name">Palette Name</Label>
+        <Input
           id="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          placeholder="Enter palette name"
           required
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Colors
-        </label>
+      <div className="space-y-2">
+        <Label>Colors</Label>
         <div className="flex gap-2">
-          <input
+          <Input
             type="color"
             value={newColor}
             onChange={(e) => setNewColor(e.target.value)}
-            className="h-10 w-20 rounded-md"
+            className="w-20 h-10 p-1"
           />
-          <button
-            type="button"
-            onClick={handleAddColor}
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-          >
+          <Button type="button" onClick={handleAddColor}>
             Add Color
-          </button>
+          </Button>
         </div>
-        <div className="mt-2 flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2">
           {colors.map((color, index) => (
             <div
               key={index}
-              className="flex items-center gap-2 bg-gray-100 px-2 py-1 rounded-md"
+              className="flex items-center gap-2 bg-secondary px-2 py-1 rounded-md"
             >
               <div
                 className="w-4 h-4 rounded-full"
                 style={{ backgroundColor: color }}
               />
               <span className="text-sm">{color}</span>
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="sm"
                 onClick={() => handleRemoveColor(index)}
-                className="text-gray-500 hover:text-gray-700"
+                className="h-6 w-6 p-0"
               >
                 ×
-              </button>
+              </Button>
             </div>
           ))}
         </div>
       </div>
 
-      <div>
-        <label
-          htmlFor="tags"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Tags
-        </label>
-        <div className="mt-1 flex gap-2">
-          <input
-            type="text"
+      <div className="space-y-2">
+        <Label htmlFor="tags">Tags</Label>
+        <div className="flex gap-2">
+          <Input
             id="tags"
             onKeyDown={(e) => e.key === "Enter" && handleAddTag(e)}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             placeholder="Add a tag and press Enter"
           />
-          <button
-            type="button"
-            onClick={handleAddTag}
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-          >
+          <Button type="button" onClick={handleAddTag}>
             Add
-          </button>
+          </Button>
         </div>
-        <div className="mt-2 flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2">
           {selectedTags.map((tagId) => {
             const tag = tags.find((t) => t.id === tagId);
             return tag ? (
-              <span
+              <div
                 key={tag.id}
-                className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                className="flex items-center gap-1 bg-secondary px-2 py-1 rounded-md"
               >
-                {tag.name}
-                <button
+                <span className="text-sm">{tag.name}</span>
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="sm"
                   onClick={() =>
                     setSelectedTags(selectedTags.filter((id) => id !== tag.id))
                   }
-                  className="ml-1"
+                  className="h-6 w-6 p-0"
                 >
                   ×
-                </button>
-              </span>
+                </Button>
+              </div>
             ) : null;
           })}
         </div>
       </div>
 
-      <button
-        type="submit"
-        className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
-      >
+      <Button type="submit" className="w-full">
         Create Palette
-      </button>
+      </Button>
     </form>
   );
 }

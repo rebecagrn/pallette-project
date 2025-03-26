@@ -1,6 +1,12 @@
 import { ColorPalette } from "@/types";
 import { useState } from "react";
 import { useStore } from "@/store/appStore";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { Star, StarOff, Pencil, Trash2 } from "lucide-react";
 
 interface PaletteCardProps {
   palette: ColorPalette;
@@ -15,7 +21,8 @@ export default function PaletteCard({
 }: PaletteCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [comment, setComment] = useState("");
-  const { tags, groups } = useStore();
+  const { tags } = useStore();
+  const { toast } = useToast();
 
   const handleAddComment = () => {
     if (!comment.trim()) return;
@@ -26,29 +33,60 @@ export default function PaletteCard({
       ],
     });
     setComment("");
+    toast({
+      title: "Success",
+      description: "Comment added successfully!",
+    });
+  };
+
+  const handleToggleFavorite = () => {
+    onEdit(palette.id, {
+      isFavorite: !palette.isFavorite,
+    });
+    toast({
+      title: "Success",
+      description: palette.isFavorite
+        ? "Removed from favorites"
+        : "Added to favorites",
+    });
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="font-medium">{palette.name}</h3>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setIsEditing(!isEditing)}
-              className="p-2 hover:bg-gray-100 rounded-full"
-            >
-              {isEditing ? "✓" : "✎"}
-            </button>
-            <button
-              onClick={() => onDelete(palette.id)}
-              className="p-2 hover:bg-gray-100 rounded-full"
-            >
-              ×
-            </button>
-          </div>
+    <Card className="overflow-hidden">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-lg font-medium">{palette.name}</CardTitle>
+        <div className="flex gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleToggleFavorite}
+            className="h-8 w-8"
+          >
+            {palette.isFavorite ? (
+              <Star className="h-4 w-4 text-yellow-500" />
+            ) : (
+              <StarOff className="h-4 w-4" />
+            )}
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsEditing(!isEditing)}
+            className="h-8 w-8"
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onDelete(palette.id)}
+            className="h-8 w-8 text-destructive"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
         </div>
-
+      </CardHeader>
+      <CardContent>
         <div className="flex h-24 rounded-lg overflow-hidden mb-4">
           {palette.colors.map((color, index) => (
             <div
@@ -65,23 +103,20 @@ export default function PaletteCard({
           ))}
         </div>
 
-        <div className="flex flex-wrap gap-2 mb-2">
+        <div className="flex flex-wrap gap-2 mb-4">
           {palette.tagIds.map((tagId) => {
             const tag = tags.find((t) => t.id === tagId);
             return tag ? (
-              <span
-                key={tag.id}
-                className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-              >
+              <Badge key={tag.id} variant="secondary">
                 {tag.name}
-              </span>
+              </Badge>
             ) : null;
           })}
         </div>
 
         <div className="space-y-2">
           {palette.comments.map((comment) => (
-            <div key={comment.id} className="text-sm text-gray-600">
+            <div key={comment.id} className="text-sm text-muted-foreground">
               {comment.text}
             </div>
           ))}
@@ -89,21 +124,17 @@ export default function PaletteCard({
 
         {isEditing && (
           <div className="mt-4 space-y-2">
-            <textarea
+            <Textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="Add a comment..."
-              className="w-full p-2 border rounded-md text-sm"
             />
-            <button
-              onClick={handleAddComment}
-              className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
-            >
+            <Button onClick={handleAddComment} className="w-full">
               Add Comment
-            </button>
+            </Button>
           </div>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

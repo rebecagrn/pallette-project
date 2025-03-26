@@ -5,6 +5,7 @@ export interface Image {
   tagIds: string[];
   comments: Comment[];
   createdAt: Date;
+  isFavorite?: boolean;
 }
 
 export interface ColorPalette {
@@ -15,6 +16,7 @@ export interface ColorPalette {
   tagIds: string[];
   comments: Comment[];
   createdAt: Date;
+  isFavorite?: boolean;
 }
 
 export interface Group {
