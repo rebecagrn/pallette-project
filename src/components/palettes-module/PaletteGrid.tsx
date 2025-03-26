@@ -1,5 +1,5 @@
 import { ColorPalette } from "@/types";
-import PaletteCard from "@/components/palettes/PaletteCard";
+import PaletteCard from "@/components/palettes-module/PaletteCard";
 
 interface PaletteGridProps {
   palettes: ColorPalette[];
