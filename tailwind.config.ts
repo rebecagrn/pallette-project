@@ -18,6 +18,9 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        leckerli: ["var(--font-leckerli)"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
