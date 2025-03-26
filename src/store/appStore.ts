@@ -98,9 +98,12 @@ export const useStore = create<AppState>()(
         })),
 
       addTag: (name) =>
-        set((state) => ({
-          tags: [...state.tags, { id: crypto.randomUUID(), name }],
-        })),
+        set((state) => {
+          const newTag = { id: crypto.randomUUID(), name };
+          return {
+            tags: [...state.tags, newTag],
+          };
+        }),
 
       removeTag: (id) =>
         set((state) => ({
