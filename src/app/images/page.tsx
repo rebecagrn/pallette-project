@@ -1,8 +1,8 @@
 "use client";
 
 import { useStore } from "@/store/appStore";
-import ImageGrid from "@/components/images/ImageGrid";
-import AddImageForm from "@/components/images/AddImageForm";
+import ImageGrid from "@/components/images-module/ImageGrid";
+import AddImageForm from "@/components/images-module/AddImageForm";
 
 export default function ImagesPage() {
   const { images, removeImage, updateImage } = useStore();
