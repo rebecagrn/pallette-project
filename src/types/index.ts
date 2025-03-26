@@ -1,4 +1,4 @@
-export interface Image {
+export interface ImageProps {
   id: string;
   url: string;
   groupIds: string[];
@@ -8,29 +8,29 @@ export interface Image {
   isFavorite?: boolean;
 }
 
-export interface ColorPalette {
+export interface ColorPaletteProps {
   id: string;
   colors: string[];
   name: string;
   groupIds: string[];
   tagIds: string[];
-  comments: Comment[];
+  comments: CommentProps[];
   createdAt: Date;
   isFavorite?: boolean;
 }
 
-export interface Group {
+export interface GroupProps {
   id: string;
   name: string;
   parentId?: string;
 }
 
-export interface Tag {
+export interface TagProps {
   id: string;
   name: string;
 }
 
-export interface Comment {
+export interface CommentProps {
   id: string;
   text: string;
   createdAt: Date;

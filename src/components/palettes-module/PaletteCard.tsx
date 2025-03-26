@@ -1,4 +1,4 @@
-import { ColorPalette } from "@/types";
+import { ColorPaletteProps } from "@/types";
 import { useState } from "react";
 import { useStore } from "@/store/appStore";
 import { Button } from "@/components/ui/button";
@@ -9,9 +9,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Star, StarOff, Pencil, Trash2 } from "lucide-react";
 
 interface PaletteCardProps {
-  palette: ColorPalette;
+  palette: ColorPaletteProps;
   onDelete: (id: string) => void;
-  onEdit: (id: string, data: Partial<ColorPalette>) => void;
+  onEdit: (id: string, data: Partial<ColorPaletteProps>) => void;
 }
 
 export default function PaletteCard({

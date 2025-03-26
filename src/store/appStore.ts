@@ -1,27 +1,27 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Image, ColorPalette, Group, Tag } from "../types";
+import { ImageProps, ColorPaletteProps, GroupProps, TagProps } from "../types";
 
 interface AppState {
-  images: Image[];
-  palettes: ColorPalette[];
-  groups: Group[];
-  tags: Tag[];
+  images: ImageProps[];
+  palettes: ColorPaletteProps[];
+  groups: GroupProps[];
+  tags: TagProps[];
 
   // Images actions
-  addImage: (image: Omit<Image, "id" | "createdAt">) => void;
+  addImage: (image: Omit<ImageProps, "id" | "createdAt">) => void;
   removeImage: (id: string) => void;
-  updateImage: (id: string, data: Partial<Image>) => void;
+  updateImage: (id: string, data: Partial<ImageProps>) => void;
 
   // Palettes actions
-  addPalette: (palette: Omit<ColorPalette, "id" | "createdAt">) => void;
+  addPalette: (palette: Omit<ColorPaletteProps, "id" | "createdAt">) => void;
   removePalette: (id: string) => void;
-  updatePalette: (id: string, data: Partial<ColorPalette>) => void;
+  updatePalette: (id: string, data: Partial<ColorPaletteProps>) => void;
 
   // Groups actions
   addGroup: (name: string, parentId?: string) => void;
   removeGroup: (id: string) => void;
-  updateGroup: (id: string, data: Partial<Group>) => void;
+  updateGroup: (id: string, data: Partial<GroupProps>) => void;
 
   // Tags actions
   addTag: (name: string) => void;

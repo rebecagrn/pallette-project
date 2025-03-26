@@ -1,11 +1,14 @@
-import { Image } from "@/types";
+import { ImageProps } from "@/types";
 import { useState } from "react";
 import { useStore } from "@/store/appStore";
+import { Button } from "../ui/button";
+import Image from "next/image";
+import { Check, Pencil } from "lucide-react";
 
 interface ImageCardProps {
-  image: Image;
+  image: ImageProps;
   onDelete: (id: string) => void;
-  onEdit: (id: string, data: Partial<Image>) => void;
+  onEdit: (id: string, data: Partial<ImageProps>) => void;
 }
 
 export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
@@ -27,24 +30,24 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
       <div className="relative aspect-square">
-        <img
+        <Image
           src={image.url}
           alt="Reference"
           className="w-full h-full object-cover"
         />
         <div className="absolute top-2 right-2 flex gap-2">
-          <button
+          <Button
             onClick={() => setIsEditing(!isEditing)}
             className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
           >
-            {isEditing ? "✓" : "✎"}
-          </button>
-          <button
+            {isEditing ? <Check /> : <Pencil />}
+          </Button>
+          <Button
             onClick={() => onDelete(image.id)}
             className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
           >
             ×
-          </button>
+          </Button>
         </div>
       </div>
 
