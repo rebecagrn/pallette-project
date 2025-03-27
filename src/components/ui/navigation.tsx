@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Logo } from "./logo";
 
 const navigation = [
   { name: "Home", href: "/" },
@@ -15,16 +16,11 @@ export function Navigation() {
 
   return (
     <nav className="bg-white shadow-sm">
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-4">
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <Link
-                href="/"
-                className="text-2xl font-leckerli text-purple-600 transition-colors"
-              >
-                BrandZone
-              </Link>
+              <Logo />
             </div>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
