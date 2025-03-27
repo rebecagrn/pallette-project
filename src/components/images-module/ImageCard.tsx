@@ -3,8 +3,18 @@ import { useState } from "react";
 import { useStore } from "@/store/appStore";
 import { Button } from "../ui/button";
 import Image from "next/image";
-import { Check, Pencil } from "lucide-react";
+import {
+  Check,
+  Pencil,
+  Star,
+  StarOff,
+  Trash2,
+  MessageSquare,
+} from "lucide-react";
 import { Textarea } from "../ui/textarea";
+import { Badge } from "../ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { cn } from "@/lib/utils";
 
 interface ImageCardProps {
   image: ImageProps;
@@ -21,8 +31,10 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
     if (!comment.trim()) return;
     const newComment: CommentProps = {
       id: crypto.randomUUID(),
+      imageId: image.id,
       text: comment,
-      createdAt: new Date(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
     onEdit(image.id, {
       comments: [...image.comments, newComment],
@@ -30,71 +42,105 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
     setComment("");
   };
 
+  const handleToggleFavorite = () => {
+    onEdit(image.id, {
+      isFavorite: !image.isFavorite,
+    });
+  };
+
   return (
-    <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
+    <Card className="group relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-gradient-to-bl from-purple-500/20 to-transparent rounded-full transform translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-gradient-to-tr from-blue-500/20 to-transparent rounded-full transform -translate-x-1/2 translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity" />
+
       <div className="relative aspect-square">
-        <Image src={image.url} alt="Reference" className="object-cover" fill />
-        <div className="absolute top-2 right-2 flex gap-2">
+        <Image
+          src={image.url}
+          alt="Reference"
+          className="object-cover transition-transform group-hover:scale-105"
+          fill
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <Button
             onClick={() => setIsEditing(!isEditing)}
             variant="secondary"
             size="icon"
-            className="h-8 w-8 rounded-full"
+            className="h-8 w-8 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30"
           >
             {isEditing ? (
               <Check className="h-4 w-4" />
             ) : (
-              <Pencil className="h-4 w-4" />
+              <MessageSquare className="h-4 w-4" />
             )}
           </Button>
           <Button
             onClick={() => onDelete(image.id)}
             variant="destructive"
             size="icon"
-            className="h-8 w-8 rounded-full"
+            className="h-8 w-8 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30"
           >
-            ×
+            <Trash2 className="h-4 w-4" />
           </Button>
         </div>
       </div>
 
-      <div className="p-6 space-y-4">
+      <CardContent className="relative space-y-4 p-4">
+        {image.groupIds.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {image.groupIds.map((groupId) => {
+              const group = groups.find((g) => g.id === groupId);
+              return group ? (
+                <Badge key={group.id} variant="default">
+                  {group.name}
+                </Badge>
+              ) : null;
+            })}
+          </div>
+        )}
+
         <div className="flex flex-wrap gap-2">
           {image.tagIds.map((tagId) => {
             const tag = tags.find((t) => t.id === tagId);
             return tag ? (
-              <span
+              <Badge
                 key={tag.id}
-                className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                variant="secondary"
+                className="bg-white/10 hover:bg-white/20"
               >
                 {tag.name}
-              </span>
+              </Badge>
             ) : null;
           })}
         </div>
 
-        <div className="space-y-2">
-          {image.comments.map((comment) => (
-            <div key={comment.id} className="text-sm text-muted-foreground">
-              {comment.text}
-            </div>
-          ))}
-        </div>
+        {image.comments.length > 0 && (
+          <div className="space-y-2">
+            {image.comments.map((comment) => (
+              <div key={comment.id} className="text-sm text-muted-foreground">
+                {comment.text}
+              </div>
+            ))}
+          </div>
+        )}
 
         {isEditing && (
-          <div className="space-y-4">
+          <div className="space-y-2">
             <Textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="Add a comment..."
-              className="min-h-[100px]"
+              className="min-h-[80px] bg-background/60 backdrop-blur-sm"
             />
-            <Button onClick={handleAddComment} className="w-full">
+            <Button
+              onClick={handleAddComment}
+              className="w-full bg-black hover:bg-slate-950"
+            >
               Add Comment
             </Button>
           </div>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

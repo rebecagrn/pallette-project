@@ -1,109 +1,237 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useStore } from "@/store/appStore";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Upload } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import Image from "next/image";
 
-export default function AddImageForm() {
+interface AddImageFormProps {
+  onSuccess?: () => void;
+}
+
+export default function AddImageForm({ onSuccess }: AddImageFormProps) {
   const [url, setUrl] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const { addImage, tags, addTag } = useStore();
+  const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { addImage, tags, groups, addTag } = useStore();
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url.trim()) return;
+    if (!url.trim()) {
+      toast({
+        title: "Error",
+        description: "Please provide an image URL or upload a file",
+        variant: "destructive",
+      });
+      return;
+    }
 
     addImage({
       url,
       tagIds: selectedTags,
-      groupIds: [],
+      groupIds: selectedGroups,
       comments: [],
+      isFavorite: false,
     });
 
     setUrl("");
     setSelectedTags([]);
+    setSelectedGroups([]);
+    setTagInput("");
+    onSuccess?.();
+
+    toast({
+      title: "Success",
+      description: "Image added successfully",
+    });
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast({
+        title: "Error",
+        description: "Please upload an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      // Here you would typically upload to your storage service
+      // For now, we'll create a local URL
+      const imageUrl = URL.createObjectURL(file);
+      setUrl(imageUrl);
+      toast({
+        title: "Success",
+        description: "Image uploaded successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to upload image",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleAddTag = (e: React.FormEvent) => {
     e.preventDefault();
-    const input = e.target as HTMLInputElement;
-    if (!input.value.trim()) return;
+    if (!tagInput.trim()) return;
 
-    const newTagId = crypto.randomUUID();
-    addTag(input.value);
-    setSelectedTags([...selectedTags, newTagId]);
-    input.value = "";
+    const newTagName = tagInput.trim();
+    const existingTag = tags.find(
+      (tag) => tag.name.toLowerCase() === newTagName.toLowerCase()
+    );
+
+    if (existingTag) {
+      if (!selectedTags.includes(existingTag.id)) {
+        setSelectedTags([...selectedTags, existingTag.id]);
+      }
+    } else {
+      const newTagId = crypto.randomUUID();
+      addTag(newTagName);
+      setSelectedTags([...selectedTags, newTagId]);
+    }
+    setTagInput("");
+  };
+
+  const handleToggleGroup = (groupId: string) => {
+    setSelectedGroups((prev) =>
+      prev.includes(groupId)
+        ? prev.filter((id) => id !== groupId)
+        : [...prev, groupId]
+    );
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 mb-8">
-      <div>
-        <Label
-          htmlFor="url"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Image URL
-        </Label>
-        <Input
-          type="url"
-          id="url"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          required
-        />
-      </div>
+    <Card className="relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-gradient-to-bl from-purple-500/20 to-transparent rounded-full transform translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-gradient-to-tr from-blue-500/20 to-transparent rounded-full transform -translate-x-1/2 translate-y-1/2" />
 
-      <div>
-        <Label
-          htmlFor="tags"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Tags
-        </Label>
-        <div className="mt-1 flex gap-2">
-          <Input
-            type="text"
-            id="tags"
-            onKeyDown={(e) => e.key === "Enter" && handleAddTag(e)}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            placeholder="Add a tag and press Enter"
-          />
-          <Button
-            type="button"
-            onClick={handleAddTag}
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-          >
-            Add
-          </Button>
-        </div>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {selectedTags.map((tagId) => {
-            const tag = tags.find((t) => t.id === tagId);
-            return tag ? (
-              <span
-                key={tag.id}
-                className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-              >
-                {tag.name}
+      <CardHeader>
+        <CardTitle className="text-xl font-bold">Add new image</CardTitle>
+      </CardHeader>
+
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-6 relative">
+          <div className="grid gap-6 md:grid-cols-1">
+            <div className="space-y-2">
+              <Label htmlFor="url">Image URL</Label>
+              <div className="flex gap-2">
+                <Input
+                  type="url"
+                  id="url"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="Enter image URL or upload"
+                  className="bg-background/60 backdrop-blur-sm"
+                />
                 <Button
                   type="button"
-                  onClick={() =>
-                    setSelectedTags(selectedTags.filter((id) => id !== tag.id))
-                  }
-                  className="ml-1"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="shrink-0"
                 >
-                  ×
+                  <Upload className="h-4 w-4" />
                 </Button>
-              </span>
-            ) : null;
-          })}
-        </div>
-      </div>
+              </div>
+              <Input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileUpload}
+                accept="image/*"
+                className="hidden"
+              />
+            </div>
 
-      <Button type="submit" className="w-full">
-        Add Image
-      </Button>
-    </form>
+            {url && (
+              <div className="relative w-full max-w-[200px] aspect-square rounded-lg overflow-hidden bg-background/60 backdrop-blur-sm">
+                <Image src={url} alt="Preview" className="object-cover" fill />
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label>Groups</Label>
+            <div className="flex flex-wrap gap-2">
+              {groups.map((group) => (
+                <Badge
+                  key={group.id}
+                  variant={
+                    selectedGroups.includes(group.id) ? "default" : "outline"
+                  }
+                  className="cursor-pointer hover:bg-primary/90"
+                  onClick={() => handleToggleGroup(group.id)}
+                >
+                  {group.name}
+                </Badge>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="tags">Tags</Label>
+            <div className="flex gap-2">
+              <Input
+                id="tags"
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && (e.preventDefault(), handleAddTag(e))
+                }
+                placeholder="Add tags"
+                className="bg-background/60 backdrop-blur-sm"
+              />
+              <Button type="button" onClick={handleAddTag} variant="secondary">
+                Add
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {tags.map((tag) => (
+                <Badge
+                  key={tag.id}
+                  variant={
+                    selectedTags.includes(tag.id) ? "default" : "outline"
+                  }
+                  className="cursor-pointer hover:bg-primary/90"
+                  onClick={() => {
+                    setSelectedTags((prev) =>
+                      prev.includes(tag.id)
+                        ? prev.filter((id) => id !== tag.id)
+                        : [...prev, tag.id]
+                    );
+                  }}
+                >
+                  {tag.name}
+                </Badge>
+              ))}
+            </div>
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full bg-black hover:bg-slate-950 text-white"
+            disabled={isUploading || !url.trim()}
+          >
+            {isUploading ? "Uploading..." : "Add Image"}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 }

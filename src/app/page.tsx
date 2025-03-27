@@ -10,21 +10,19 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                The easiest place to get colors from your photos
+              <h1 className="text-2xl md:text-3xl font-bold mb-6">
+                Get colors from your photos
               </h1>
-              <p className="text-lg text-gray-600 mb-8">
-                Want a color scheme that perfectly matches your favorite images?
-                With our color palette generator, you can create color
-                combinations in seconds. Simply upload a photo, and we'll use
-                the hues in the photo to create your palette.
+              <p className="text-base text-gray-500 mb-8">
+                Looking for a color scheme that perfectly matches your favorite
+                images? Our color palette generator makes it effortless! Simply
+                upload a photo, and we'll extract the perfect color combinations
+                in seconds. Try it now and bring your images to life with the
+                perfect palette!
               </p>
               <div className="flex gap-4">
                 <Button size="lg" className="bg-purple-600 hover:bg-purple-700">
                   Upload an image
-                </Button>
-                <Button size="lg" variant="outline">
-                  Try demo image
                 </Button>
               </div>
             </div>
@@ -86,10 +84,12 @@ export default function Home() {
             ))}
           </div>
           <div className="flex justify-center gap-4">
-            <Button size="lg" className="bg-purple-600 hover:bg-purple-700">
-              Explore color combinations
-            </Button>
             <Link href="/generator">
+              <Button size="lg" className="bg-purple-600 hover:bg-purple-700">
+                Explore color palettes
+              </Button>
+            </Link>
+            <Link href="/palettes">
               <Button size="lg" variant="outline">
                 Create a custom color palette
               </Button>

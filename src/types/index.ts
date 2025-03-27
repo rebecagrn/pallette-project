@@ -4,7 +4,7 @@ export interface ImageProps {
   groupIds: string[];
   tagIds: string[];
   comments: CommentProps[];
-  createdAt: Date;
+  createdAt: string;
   isFavorite?: boolean;
 }
 
@@ -15,7 +15,7 @@ export interface ColorPaletteProps {
   groupIds: string[];
   tagIds: string[];
   comments: CommentProps[];
-  createdAt: Date;
+  createdAt: string;
   isFavorite?: boolean;
 }
 
@@ -32,7 +32,8 @@ export interface TagProps {
 
 export interface CommentProps {
   id: string;
+  imageId: string;
   text: string;
-  createdAt: Date;
-  updatedAt?: Date;
+  createdAt: string;
+  updatedAt: string;
 }

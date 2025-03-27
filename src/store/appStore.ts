@@ -1,12 +1,20 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { ImageProps, ColorPaletteProps, GroupProps, TagProps } from "../types";
+import {
+  ImageProps,
+  ColorPaletteProps,
+  GroupProps,
+  TagProps,
+  CommentProps,
+} from "../types";
+import { nanoid } from "nanoid";
 
 interface AppState {
   images: ImageProps[];
   palettes: ColorPaletteProps[];
   groups: GroupProps[];
   tags: TagProps[];
+  comments: CommentProps[];
 
   // Images actions
   addImage: (image: Omit<ImageProps, "id" | "createdAt">) => void;
@@ -27,6 +35,9 @@ interface AppState {
   addTag: (name: string) => void;
   removeTag: (id: string) => void;
   updateTag: (id: string, name: string) => void;
+
+  // Comments actions
+  addComment: (imageId: string, text: string) => void;
 }
 
 export const useStore = create<AppState>()(
@@ -36,16 +47,20 @@ export const useStore = create<AppState>()(
       palettes: [],
       groups: [],
       tags: [],
+      comments: [],
 
-      addImage: (image) =>
+      addImage: (image: Omit<ImageProps, "id" | "createdAt">) => {
+        const newImage: ImageProps = {
+          ...image,
+          id: nanoid(),
+          createdAt: new Date().toISOString(),
+        };
         set((state) => ({
-          images: [
-            ...state.images,
-            { ...image, id: crypto.randomUUID(), createdAt: new Date() },
-          ],
-        })),
+          images: [...state.images, newImage],
+        }));
+      },
 
-      removeImage: (id) =>
+      removeImage: (id: string) =>
         set((state) => ({
           images: state.images.filter((img) => img.id !== id),
         })),
@@ -57,15 +72,18 @@ export const useStore = create<AppState>()(
           ),
         })),
 
-      addPalette: (palette) =>
+      addPalette: (palette: Omit<ColorPaletteProps, "id" | "createdAt">) => {
+        const newPalette: ColorPaletteProps = {
+          ...palette,
+          id: nanoid(),
+          createdAt: new Date().toISOString(),
+        };
         set((state) => ({
-          palettes: [
-            ...state.palettes,
-            { ...palette, id: crypto.randomUUID(), createdAt: new Date() },
-          ],
-        })),
+          palettes: [...state.palettes, newPalette],
+        }));
+      },
 
-      removePalette: (id) =>
+      removePalette: (id: string) =>
         set((state) => ({
           palettes: state.palettes.filter((palette) => palette.id !== id),
         })),
@@ -79,13 +97,10 @@ export const useStore = create<AppState>()(
 
       addGroup: (name, parentId) =>
         set((state) => ({
-          groups: [
-            ...state.groups,
-            { id: crypto.randomUUID(), name, parentId },
-          ],
+          groups: [...state.groups, { id: nanoid(), name, parentId }],
         })),
 
-      removeGroup: (id) =>
+      removeGroup: (id: string) =>
         set((state) => ({
           groups: state.groups.filter((group) => group.id !== id),
         })),
@@ -97,28 +112,63 @@ export const useStore = create<AppState>()(
           ),
         })),
 
-      addTag: (name) =>
+      addTag: (name: string) =>
         set((state) => {
-          const newTag = { id: crypto.randomUUID(), name };
+          const newTag = { id: nanoid(), name };
           return {
             tags: [...state.tags, newTag],
           };
         }),
 
-      removeTag: (id) =>
+      removeTag: (id: string) =>
         set((state) => ({
           tags: state.tags.filter((tag) => tag.id !== id),
         })),
 
-      updateTag: (id, name) =>
+      updateTag: (id, name: string) =>
         set((state) => ({
           tags: state.tags.map((tag) =>
             tag.id === id ? { ...tag, name } : tag
           ),
         })),
+
+      addComment: (imageId: string, text: string) => {
+        const newComment = {
+          id: nanoid(),
+          imageId,
+          text,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        set((state) => ({
+          comments: [...state.comments, newComment],
+        }));
+      },
     }),
     {
       name: "brand-zone-storage",
+      storage: {
+        getItem: (name) => {
+          const str = localStorage.getItem(name);
+          if (!str) return null;
+          const data = JSON.parse(str);
+          if (data.state) {
+            data.state.images = data.state.images.map((img: any) => ({
+              ...img,
+              createdAt: img.createdAt,
+            }));
+            data.state.palettes = data.state.palettes.map((palette: any) => ({
+              ...palette,
+              createdAt: palette.createdAt,
+            }));
+          }
+          return data;
+        },
+        setItem: (name, value) => {
+          localStorage.setItem(name, JSON.stringify(value));
+        },
+        removeItem: (name) => localStorage.removeItem(name),
+      },
     }
   )
 );
