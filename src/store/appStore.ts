@@ -11,6 +11,9 @@ import { nanoid } from "nanoid";
 
 interface AppState {
   images: ImageProps[];
+  viewMode: "grid" | "list";
+  sortBy: "newest" | "oldest" | "name";
+  showAddImageDialog: boolean;
   palettes: ColorPaletteProps[];
   groups: GroupProps[];
   tags: TagProps[];
@@ -20,6 +23,9 @@ interface AppState {
   addImage: (image: Omit<ImageProps, "id" | "createdAt">) => void;
   removeImage: (id: string) => void;
   updateImage: (id: string, data: Partial<ImageProps>) => void;
+  setViewMode: (mode: "grid" | "list") => void;
+  setSortBy: (sort: "newest" | "oldest" | "name") => void;
+  setShowAddImageDialog: (show: boolean) => void;
 
   // Palettes actions
   addPalette: (palette: Omit<ColorPaletteProps, "id" | "createdAt">) => void;
@@ -44,10 +50,17 @@ export const useStore = create<AppState>()(
   persist(
     (set) => ({
       images: [],
+      viewMode: "grid",
+      sortBy: "newest",
+      showAddImageDialog: false,
       palettes: [],
       groups: [],
       tags: [],
       comments: [],
+
+      setViewMode: (mode) => set({ viewMode: mode }),
+      setSortBy: (sort) => set({ sortBy: sort }),
+      setShowAddImageDialog: (show) => set({ showAddImageDialog: show }),
 
       addImage: (image: Omit<ImageProps, "id" | "createdAt">) => {
         const newImage: ImageProps = {

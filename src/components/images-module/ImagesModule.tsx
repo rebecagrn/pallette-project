@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useStore } from "@/store/appStore";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ImageProps } from "@/types";
@@ -8,10 +7,17 @@ import ImagesHeader from "./ImagesHeader";
 import GroupManager from "./GroupManager";
 
 export default function ImagesModule() {
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "name">("newest");
-  const [showAddDialog, setShowAddDialog] = useState(false);
-  const { images, removeImage, updateImage } = useStore();
+  const {
+    images,
+    viewMode,
+    sortBy,
+    showAddImageDialog,
+    removeImage,
+    updateImage,
+    setViewMode,
+    setSortBy,
+    setShowAddImageDialog,
+  } = useStore();
 
   const sortedImages = [...images].sort((a, b) => {
     switch (sortBy) {
@@ -44,7 +50,7 @@ export default function ImagesModule() {
         <div className="space-y-6">
           <ImagesHeader
             totalImages={images.length}
-            onAddClick={() => setShowAddDialog(true)}
+            onAddClick={() => setShowAddImageDialog(true)}
             viewMode={viewMode}
             onViewModeChange={setViewMode}
             sortBy={sortBy}
@@ -63,9 +69,9 @@ export default function ImagesModule() {
         </div>
       </div>
 
-      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+      <Dialog open={showAddImageDialog} onOpenChange={setShowAddImageDialog}>
         <DialogContent className="max-w-3xl">
-          <AddImageForm onSuccess={() => setShowAddDialog(false)} />
+          <AddImageForm onSuccess={() => setShowAddImageDialog(false)} />
         </DialogContent>
       </Dialog>
     </div>

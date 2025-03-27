@@ -13,8 +13,8 @@ import {
 } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import { Badge } from "../ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { cn } from "@/lib/utils";
+import { Card, CardContent } from "../ui/card";
+import { Suspense } from "react";
 
 interface ImageCardProps {
   image: ImageProps;
@@ -54,12 +54,18 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
       <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-gradient-to-tr from-blue-500/20 to-transparent rounded-full transform -translate-x-1/2 translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity" />
 
       <div className="relative aspect-square">
-        <Image
-          src={image.url}
-          alt="Reference"
-          className="object-cover transition-transform group-hover:scale-105"
-          fill
-        />
+        <Suspense
+          fallback={<div className="w-full h-full bg-gray-100 animate-pulse" />}
+        >
+          <Image
+            src={image.url}
+            alt=""
+            className="object-cover transition-transform group-hover:scale-105"
+            fill
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+        </Suspense>
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <Button
