@@ -15,6 +15,7 @@ import { Textarea } from "../ui/textarea";
 import { Badge } from "../ui/badge";
 import { Card, CardContent } from "../ui/card";
 import { Suspense } from "react";
+import CommentSection from "../shared/CommentSection";
 
 interface ImageCardProps {
   image: ImageProps;
@@ -46,6 +47,10 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
     onEdit(image.id, {
       isFavorite: !image.isFavorite,
     });
+  };
+
+  const handleUpdateComments = (comments: CommentProps[]) => {
+    onEdit(image.id, { comments });
   };
 
   return (
@@ -120,15 +125,11 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
           })}
         </div>
 
-        {image.comments.length > 0 && (
-          <div className="space-y-2">
-            {image.comments.map((comment) => (
-              <div key={comment.id} className="text-sm text-muted-foreground">
-                {comment.text}
-              </div>
-            ))}
-          </div>
-        )}
+        <CommentSection
+          itemId={image.id}
+          comments={image.comments}
+          onUpdate={handleUpdateComments}
+        />
 
         {isEditing && (
           <div className="space-y-2">

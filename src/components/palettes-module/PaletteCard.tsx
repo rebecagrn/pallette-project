@@ -1,14 +1,13 @@
-import { ColorPaletteProps } from "@/types";
-import { useState } from "react";
+import { ColorPaletteProps, CommentProps } from "@/types";
 import { useStore } from "@/store/appStore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Star, StarOff, Trash2, MessageSquare } from "lucide-react";
+import { Star, StarOff, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
+import CommentSection from "../shared/CommentSection";
+import { stringTrimToDots } from "@/lib/utils";
 interface PaletteCardProps {
   palette: ColorPaletteProps;
   onDelete: (id: string) => void;
@@ -20,25 +19,8 @@ export default function PaletteCard({
   onDelete,
   onEdit,
 }: PaletteCardProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [comment, setComment] = useState("");
   const { tags } = useStore();
   const { toast } = useToast();
-
-  const handleAddComment = () => {
-    if (!comment.trim()) return;
-    onEdit(palette.id, {
-      comments: [
-        ...palette.comments,
-        { id: crypto.randomUUID(), text: comment, createdAt: new Date() },
-      ],
-    });
-    setComment("");
-    toast({
-      title: "Success",
-      description: "Comment added successfully!",
-    });
-  };
 
   const handleToggleFavorite = () => {
     onEdit(palette.id, {
@@ -52,10 +34,16 @@ export default function PaletteCard({
     });
   };
 
+  const handleUpdateComments = (comments: CommentProps[]) => {
+    onEdit(palette.id, { comments });
+  };
+
   return (
     <Card className="overflow-hidden">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-lg font-medium">{palette.name}</CardTitle>
+        <CardTitle className="text-lg font-medium">
+          {stringTrimToDots(palette.name, 25)}
+        </CardTitle>
         <div className="flex gap-2">
           <Button
             variant="ghost"
@@ -77,15 +65,6 @@ export default function PaletteCard({
             ) : (
               <StarOff className="h-4 w-4" />
             )}
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsEditing(!isEditing)}
-            className="h-8 w-8 hover:text-primary"
-            title="Add comment"
-          >
-            <MessageSquare className="h-4 w-4" />
           </Button>
           <Button
             variant="ghost"
@@ -126,30 +105,11 @@ export default function PaletteCard({
           })}
         </div>
 
-        <div className="space-y-2">
-          {palette.comments.map((comment) => (
-            <div key={comment.id} className="text-sm text-muted-foreground">
-              {comment.text}
-            </div>
-          ))}
-        </div>
-
-        {isEditing && (
-          <div className="mt-4 space-y-2">
-            <Textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Add a comment..."
-            />
-            <Button
-              onClick={handleAddComment}
-              className="w-full bg-black hover:bg-purple-700"
-              title="Send comment"
-            >
-              Add Comment
-            </Button>
-          </div>
-        )}
+        <CommentSection
+          itemId={palette.id}
+          comments={palette.comments}
+          onUpdate={handleUpdateComments}
+        />
       </CardContent>
     </Card>
   );

@@ -12,3 +12,7 @@ export function rgbToHex(r: number, g: number, b: number): string {
   };
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
+
+export const stringTrimToDots = (text: string, length: number) => {
+  return text.length > length ? `${text.slice(0, length)}...` : text;
+};
