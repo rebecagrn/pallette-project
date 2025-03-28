@@ -7,7 +7,7 @@ export default function GeneratorPage() {
     <div className="container mx-auto py-8">
       <div className="mb-8">
         <h1 className="text-2xl font-bold tracking-tight">Generator</h1>
-        <p className="text-lg text-muted-foreground mt-2">
+        <p className="text-base text-muted-foreground mt-2">
           Generate color palettes from images and manage your visual
           inspiration.
         </p>

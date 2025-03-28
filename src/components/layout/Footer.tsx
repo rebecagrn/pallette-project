@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Instagram } from "lucide-react";
-import { Logo } from "../ui/logo";
+import { Logo } from "./logo";
 
 export default function Footer() {
   return (

@@ -3,14 +3,7 @@ import { useState } from "react";
 import { useStore } from "@/store/appStore";
 import { Button } from "../ui/button";
 import Image from "next/image";
-import {
-  Check,
-  Pencil,
-  Star,
-  StarOff,
-  Trash2,
-  MessageSquare,
-} from "lucide-react";
+import { Check, Trash2, MessageSquare } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import { Badge } from "../ui/badge";
 import { Card, CardContent } from "../ui/card";
@@ -41,12 +34,6 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
       comments: [...image.comments, newComment],
     });
     setComment("");
-  };
-
-  const handleToggleFavorite = () => {
-    onEdit(image.id, {
-      isFavorite: !image.isFavorite,
-    });
   };
 
   const handleUpdateComments = (comments: CommentProps[]) => {
@@ -82,7 +69,7 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
             {isEditing ? (
               <Check className="h-4 w-4" />
             ) : (
-              <MessageSquare className="h-4 w-4" />
+              <MessageSquare className="h-4 w-4 text-black" />
             )}
           </Button>
           <Button
@@ -91,7 +78,7 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
             size="icon"
             className="h-8 w-8 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-4 w-4 text-black" />
           </Button>
         </div>
       </div>
