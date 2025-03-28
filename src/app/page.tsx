@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { DEMO_COLOR_PALETTES, DEMO_PALETTE_COLORS } from "@/types/constants";
 import Footer from "@/components/layout/Footer";
-
+import Image from "next/image";
 export default function Home() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -23,50 +23,54 @@ export default function Home() {
                   your images to life with the perfect palette!
                 </p>
                 <div className="flex gap-4">
-                  <Button
-                    size="lg"
-                    className="bg-purple-600 hover:bg-purple-700"
-                  >
-                    Upload an image
-                  </Button>
+                  <Link href="/generator">
+                    <Button size="lg" className="bg-black hover:bg-slate-950">
+                      Upload an image
+                    </Button>
+                  </Link>
                 </div>
               </div>
-              <div className="relative">
-                <div className="aspect-square rounded-lg overflow-hidden">
-                  <img
-                    src="/demo-palette.jpg"
+              <div className="relative rounded-xl p-4">
+                <div className="aspect-square rounded-lg overflow-hidden items-center flex justify-center">
+                  <Image
+                    src="/assets/images/demo-palette.jpg"
                     alt="Color Palette Demo"
-                    className="w-full h-full object-cover"
+                    className="object-cover"
+                    width={700}
+                    height={700}
+                    priority
                   />
                 </div>
-                <div className="grid grid-cols-4 gap-1 mt-2">
-                  {DEMO_PALETTE_COLORS.map((color) => (
-                    <div
-                      key={color.hex}
-                      className="h-24"
-                      style={{ backgroundColor: color.color }}
-                    />
-                  ))}
-                </div>
-                <div className="grid grid-cols-4 gap-1 mt-1">
-                  {DEMO_PALETTE_COLORS.map((color) => (
-                    <div
-                      key={color.hex}
-                      className="text-center text-sm text-gray-600"
-                    >
-                      {color.name}
-                    </div>
-                  ))}
-                </div>
-                <div className="grid grid-cols-4 gap-1">
-                  {DEMO_PALETTE_COLORS.map((color) => (
-                    <div
-                      key={color.hex}
-                      className="text-center text-xs text-gray-500"
-                    >
-                      {color.hex}
-                    </div>
-                  ))}
+                <div className="space-y-1">
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {DEMO_PALETTE_COLORS.map((color) => (
+                      <div
+                        key={color.hex}
+                        className="h-14 rounded-md"
+                        style={{ backgroundColor: color.color }}
+                      />
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {DEMO_PALETTE_COLORS.map((color) => (
+                      <div
+                        key={color.hex}
+                        className="text-center text-sm font-medium text-gray-700"
+                      >
+                        {color.name}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {DEMO_PALETTE_COLORS.map((color) => (
+                      <div
+                        key={color.hex}
+                        className="text-center text-xs font-mono text-gray-500"
+                      >
+                        {color.hex}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -95,7 +99,7 @@ export default function Home() {
             </div>
             <div className="flex justify-center gap-4">
               <Link href="/generator">
-                <Button size="lg" className="bg-purple-600 hover:bg-purple-700">
+                <Button size="lg" className="bg-black hover:bg-slate-950">
                   Explore color palettes
                 </Button>
               </Link>

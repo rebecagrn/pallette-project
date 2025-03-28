@@ -4,7 +4,7 @@ export function Logo() {
   return (
     <Link
       href="/"
-      className="text-2xl font-leckerli text-purple-600 transition-colors"
+      className="text-2xl font-leckerli text-[#2E8BC0] transition-colors"
     >
       BrandZone
     </Link>

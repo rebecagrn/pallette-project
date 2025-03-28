@@ -16,7 +16,7 @@ export const DEMO_COLOR_PALETTES: ColorPalette[] = [
 ];
 
 export const DEMO_PALETTE_COLORS = [
-  { color: "#FFAEBC", name: "Hot Pink", hex: "#FFAEBC" },
+  { color: "#814a38", name: "Ironstone", hex: "#814a38" },
   { color: "#A0E7E5", name: "Tiffany Blue", hex: "#A0E7E5" },
   { color: "#B4F8C8", name: "Mint", hex: "#B4F8C8" },
   { color: "#FBE7C6", name: "Yellow", hex: "#FBE7C6" },
