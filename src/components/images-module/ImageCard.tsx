@@ -3,12 +3,13 @@ import { useState } from "react";
 import { useStore } from "@/store/appStore";
 import { Button } from "../ui/button";
 import Image from "next/image";
-import { Check, Trash2, MessageSquare } from "lucide-react";
+import { Check, Trash2, MessageSquare, Heart, Palette } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import { Badge } from "../ui/badge";
-import { Card, CardContent } from "../ui/card";
-import { Suspense } from "react";
+import { Card, CardContent, CardHeader } from "../ui/card";
 import CommentSection from "../shared/CommentSection";
+import { extractColors } from "@/lib/colorExtractor";
+import { useToast } from "@/components/ui/use-toast";
 
 interface ImageCardProps {
   image: ImageProps;
@@ -18,8 +19,10 @@ interface ImageCardProps {
 
 export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [isExtracting, setIsExtracting] = useState(false);
   const [comment, setComment] = useState("");
-  const { tags, groups } = useStore();
+  const { tags, groups, addPalette } = useStore();
+  const { toast } = useToast();
 
   const handleAddComment = () => {
     if (!comment.trim()) return;
@@ -40,50 +43,90 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
     onEdit(image.id, { comments });
   };
 
+  const handleExtractColors = async () => {
+    setIsExtracting(true);
+    try {
+      const colors = await extractColors(image.url);
+      const paletteName = `Palette from ${
+        image.url.split("/").pop() || "image"
+      }`;
+
+      addPalette({
+        name: paletteName,
+        colors,
+        tagIds: image.tagIds,
+        groupIds: image.groupIds,
+        comments: [],
+        isFavorite: false,
+      });
+
+      toast({
+        title: "Success",
+        description: "Colors extracted and palette created successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to extract colors from image",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExtracting(false);
+    }
+  };
+
+  const handleToggleFavorite = () => {
+    onEdit(image.id, { isFavorite: !image.isFavorite });
+  };
+
   return (
     <Card className="group relative overflow-hidden">
       <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-gradient-to-bl from-purple-500/20 to-transparent rounded-full transform translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity" />
       <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-gradient-to-tr from-blue-500/20 to-transparent rounded-full transform -translate-x-1/2 translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity" />
 
-      <div className="relative aspect-square">
-        <Suspense
-          fallback={<div className="w-full h-full bg-gray-100 animate-pulse" />}
-        >
-          <Image
-            src={image.url}
-            alt=""
-            className="object-cover transition-transform group-hover:scale-105"
-            fill
-            loading="lazy"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
-        </Suspense>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-        <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <div className="flex items-center gap-2">
           <Button
-            onClick={() => setIsEditing(!isEditing)}
-            variant="secondary"
+            variant="ghost"
             size="icon"
-            className="h-8 w-8 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30"
+            onClick={handleToggleFavorite}
+            className={`h-8 w-8 ${
+              image.isFavorite ? "text-red-500" : "text-muted-foreground"
+            }`}
           >
-            {isEditing ? (
-              <Check className="h-4 w-4" />
-            ) : (
-              <MessageSquare className="h-4 w-4 text-black" />
-            )}
+            <Heart
+              className={`h-4 w-4 ${image.isFavorite ? "fill-current" : ""}`}
+            />
           </Button>
           <Button
-            onClick={() => onDelete(image.id)}
-            variant="destructive"
+            variant="ghost"
             size="icon"
-            className="h-8 w-8 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30"
+            onClick={handleExtractColors}
+            disabled={isExtracting}
+            className="h-8 w-8"
           >
-            <Trash2 className="h-4 w-4 text-black" />
+            <Palette className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onDelete(image.id)}
+            className="h-8 w-8 hover:text-destructive"
+          >
+            <Trash2 className="h-4 w-4" />
           </Button>
         </div>
-      </div>
+      </CardHeader>
 
       <CardContent className="relative space-y-4 p-4">
+        <div className="relative aspect-square overflow-hidden rounded-lg">
+          <img
+            src={image.url}
+            alt="Uploaded image"
+            className="object-cover w-full h-full"
+          />
+        </div>
+
         {image.groupIds.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {image.groupIds.map((groupId) => {

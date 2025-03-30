@@ -1,51 +1,55 @@
-import { ImageProps } from "@/types";
 import { useState } from "react";
 import { useStore } from "@/store/appStore";
-import ImageCard from "./ImageCard";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Filter } from "lucide-react";
+import PaletteCard from "./PaletteCard";
 import SearchBar from "@/components/shared/SearchBar";
+import { ColorPaletteProps } from "@/types";
 
-interface ImageGridProps {
-  images: ImageProps[];
+interface PalettesGridProps {
+  palettes: ColorPaletteProps[];
   onDelete: (id: string) => void;
-  onEdit: (id: string, data: Partial<ImageProps>) => void;
+  onEdit: (id: string, data: Partial<ColorPaletteProps>) => void;
 }
 
-export default function ImageGrid({
-  images,
+export default function PalettesGrid({
+  palettes,
   onDelete,
   onEdit,
-}: ImageGridProps) {
+}: PalettesGridProps) {
   const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const { groups, tags } = useStore();
 
-  const filteredImages = images.filter((image) => {
+  const filteredPalettes = palettes.filter((palette) => {
     const matchesGroups =
       selectedGroupIds.length === 0 ||
-      selectedGroupIds.some((groupId) => image.groupIds.includes(groupId));
+      selectedGroupIds.some((groupId) => palette.groupIds.includes(groupId));
 
     const matchesTags =
       selectedTagIds.length === 0 ||
-      selectedTagIds.some((tagId) => image.tagIds.includes(tagId));
+      selectedTagIds.some((tagId) => palette.tagIds.includes(tagId));
 
     const matchesSearch =
       searchQuery === "" ||
-      // Search in image URL
-      image.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      // Search in palette name
+      palette.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       // Search in comments
-      image.comments.some((comment) =>
+      palette.comments.some((comment) =>
         comment.text.toLowerCase().includes(searchQuery.toLowerCase())
       ) ||
       // Search in associated tags
-      image.tagIds.some((tagId) => {
+      palette.tagIds.some((tagId) => {
         const tag = tags.find((t) => t.id === tagId);
         return tag?.name.toLowerCase().includes(searchQuery.toLowerCase());
-      });
+      }) ||
+      // Search in colors
+      palette.colors.some((color) =>
+        color.toLowerCase().includes(searchQuery.toLowerCase())
+      );
 
     return matchesGroups && matchesTags && matchesSearch;
   });
@@ -100,7 +104,7 @@ export default function ImageGrid({
 
           <SearchBar
             onSearch={setSearchQuery}
-            placeholder="Search by name, comment, or tag..."
+            placeholder="Search by name, comment, tag, or color..."
           />
 
           {groups.length > 0 && (
@@ -148,17 +152,17 @@ export default function ImageGrid({
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredImages.map((image) => (
-          <ImageCard
-            key={image.id}
-            image={image}
+        {filteredPalettes.map((palette) => (
+          <PaletteCard
+            key={palette.id}
+            palette={palette}
             onDelete={onDelete}
             onEdit={onEdit}
           />
         ))}
-        {filteredImages.length === 0 && (
+        {filteredPalettes.length === 0 && (
           <div className="col-span-full text-center py-12 text-muted-foreground">
-            No images match the selected filters
+            No palettes match the selected filters
           </div>
         )}
       </div>

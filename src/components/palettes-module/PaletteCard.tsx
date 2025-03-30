@@ -1,13 +1,16 @@
+import { useState } from "react";
 import { ColorPaletteProps, CommentProps } from "@/types";
 import { useStore } from "@/store/appStore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Star, StarOff, Trash2 } from "lucide-react";
+import { Star, StarOff, Trash2, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import CommentSection from "../shared/CommentSection";
 import { stringTrimToDots } from "@/lib/utils";
+import ExportImportPalette from "./ExportImportPalette";
+
 interface PaletteCardProps {
   palette: ColorPaletteProps;
   onDelete: (id: string) => void;
@@ -39,44 +42,41 @@ export default function PaletteCard({
   };
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="group relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-gradient-to-bl from-purple-500/20 to-transparent rounded-full transform translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-gradient-to-tr from-blue-500/20 to-transparent rounded-full transform -translate-x-1/2 translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity" />
+
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-lg font-medium">
-          {stringTrimToDots(palette.name, 25)}
-        </CardTitle>
-        <div className="flex gap-2">
+        <div className="space-y-1">
+          <h3 className="font-semibold leading-none">{palette.name}</h3>
+          <p className="text-sm text-muted-foreground">
+            {palette.colors.length} colors
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
             onClick={handleToggleFavorite}
-            className="h-8 w-8"
-            title={
-              palette.isFavorite ? "Remove from favorites" : "Add to favorites"
-            }
+            className={`h-8 w-8 ${
+              palette.isFavorite ? "text-red-500" : "text-muted-foreground"
+            }`}
           >
-            {palette.isFavorite ? (
-              <Star
-                className={cn(
-                  "h-4 w-4",
-                  palette.isFavorite ? "text-yellow-500" : "text-gray-500"
-                )}
-                fill="currentColor"
-              />
-            ) : (
-              <StarOff className="h-4 w-4" />
-            )}
+            <Heart
+              className={`h-4 w-4 ${palette.isFavorite ? "fill-current" : ""}`}
+            />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => onDelete(palette.id)}
             className="h-8 w-8 hover:text-destructive"
-            title="Delete palette"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
       </CardHeader>
+
       <CardContent>
         <div className="flex h-24 rounded-lg overflow-hidden mb-4">
           {palette.colors.map((color, index) => (
@@ -86,7 +86,7 @@ export default function PaletteCard({
               style={{ backgroundColor: color }}
             >
               <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity flex items-center justify-center">
-                <span className="text-white opacity-0 group-hover:opacity-100 text-sm">
+                <span className="text-white opacity-0 group-hover:opacity-100 text-sm font-mono">
                   {color}
                 </span>
               </div>
@@ -103,6 +103,13 @@ export default function PaletteCard({
               </Badge>
             ) : null;
           })}
+        </div>
+
+        <div className="mb-4">
+          <ExportImportPalette
+            palette={palette}
+            onImport={(data) => onEdit(palette.id, data)}
+          />
         </div>
 
         <CommentSection
