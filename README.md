@@ -1,43 +1,67 @@
-# Palette Project
+# Pallette - Color Palette Generator
 
-A modern web application for managing images and color palettes. Extract colors from images, create custom palettes, and organize your visual inspiration.
+A modern web application for generating and managing color palettes from images. Built with Next.js, TypeScript, and Tailwind CSS.
 
 ## Features
 
-- 🖼️ Image Management
+### Image Management
 
-  - Upload images or add by URL
-  - Extract color palettes from images
-  - Organize with tags and groups
-  - Add comments and favorites
+- Upload images via URL or file
+- Organize images in custom groups
+- Add tags to images
+- Add and edit comments
+- Delete images
+- Favorite images for quick access
 
-- 🎨 Color Palettes
+### Palette Management
 
-  - Create custom color palettes
-  - Browse and organize palettes
-  - Tag and group organization
-  - Comment and favorite system
+- Generate color palettes from images
+- Create custom color palettes
+- Organize palettes in custom groups
+- Add tags to palettes
+- Add and edit comments
+- Delete palettes
+- Favorite palettes for quick access
 
-- 🔍 Search & Organization
-  - Filter by tags and groups
-  - Sort by date or name
-  - Grid and list views
-  - Quick search functionality
+### Organization
+
+- Create and manage custom groups
+- Create and manage tags
+- Filter content by group or tag
+- Search by name, comment, or tag
+- Sort content by various criteria
+
+### Statistics Dashboard
+
+- View total counts of images and palettes
+- Track favorite items
+- Monitor tag usage statistics
+- Analyze group distribution
+- Track popular tags and groups
+
+### Additional Features
+
+- Export palettes in JSON format
+- Import palettes from JSON files
+- Color extraction from images
+- Responsive design
+- Dark mode support
+- Offline support via localStorage
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18.0.0 or later
-- pnpm 8.0.0 or later
+- Node.js 18.x or later
+- pnpm (recommended) or npm
 
 ### Installation
 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/palette-project.git
-cd palette-project
+git clone https://github.com/yourusername/pallette.git
+cd pallette
 ```
 
 2. Install dependencies:
@@ -54,28 +78,21 @@ pnpm dev
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### Building for Production
-
-```bash
-pnpm build
-pnpm start
-```
-
 ## Project Structure
 
 ```
-palette-project/
-├── src/
-│   ├── app/                 # Next.js pages and layouts
-│   ├── components/          # React components
-│   ├── hooks/              # Custom React hooks
-│   ├── lib/                # Utility functions
-│   ├── store/              # Zustand store
-│   └── types/              # TypeScript types
-├── public/                 # Static assets
-├── ARCHITECTURE.md         # System design documentation
-├── package.json           # Project dependencies
-└── README.md             # Project documentation
+src/
+├── app/                    # Next.js app router
+├── components/            # React components
+│   ├── common/           # Shared components
+│   ├── images-module/    # Image-related components
+│   ├── palettes-module/  # Palette-related components
+│   ├── dashboard/        # Statistics dashboard components
+│   └── layout/           # Layout components
+├── lib/                   # Utility functions
+├── store/                # Zustand store
+├── types/                # TypeScript types
+└── styles/               # Global styles
 ```
 
 ## Technical Stack
@@ -84,24 +101,19 @@ palette-project/
 - **Language**: TypeScript
 - **State Management**: Zustand
 - **Styling**: Tailwind CSS
-- **UI Components**: shadcn/ui
-- **Testing**: Jest + React Testing Library
+- **UI Components**: Shadcn/ui
+- **Color Processing**: ColorThief
+- **Data Persistence**: LocalStorage
 
 ## Development
 
 ### Running Tests
 
 ```bash
-# Run tests
 pnpm test
-
-# Run tests in watch mode
-pnpm test:watch
 ```
 
 ### Code Style
-
-The project uses ESLint and Prettier for code formatting. Run the linter:
 
 ```bash
 pnpm lint
@@ -109,44 +121,48 @@ pnpm lint
 
 ## Known Limitations
 
-1. **Local Storage Only**: Currently uses browser localStorage for data persistence
-2. **Image Handling**: Limited to URL-based images, no file upload storage
-3. **Performance**: Large collections might impact performance due to client-side handling
+- Data is stored locally in the browser
+- Limited image processing capabilities
+- No backend integration yet
+- No user authentication
+- No collaborative features
 
 ## Future Improvements
 
-1. **Server Integration**
+### Planned Features
 
-   - Add backend API
-   - Implement proper image storage
-   - Add user authentication
+- Backend integration
+- User authentication
+- Collaborative features
+- Advanced color editor
+- AI-powered suggestions
+- Advanced analytics
+- Social sharing
+- Mobile app version
 
-2. **Feature Enhancements**
+### Performance Optimizations
 
-   - Color extraction API
-   - Advanced palette generation
-   - Social sharing features
-
-3. **Performance Optimizations**
-   - Image optimization
-   - Infinite scrolling
-   - Virtual list rendering
+- Server-side rendering
+- Image optimization
+- Caching strategies
+- Progressive web app support
 
 ## Contributing
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
 - [Next.js](https://nextjs.org/)
-- [Zustand](https://github.com/pmndrs/zustand)
 - [Tailwind CSS](https://tailwindcss.com/)
-- [shadcn/ui](https://ui.shadcn.com/)
+- [Shadcn/ui](https://ui.shadcn.com/)
+- [Zustand](https://github.com/pmndrs/zustand)
+- [ColorThief](https://github.com/lokesh/color-thief)

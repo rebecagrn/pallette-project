@@ -25,6 +25,10 @@ graph TD
         PM[Palette Management]
         TG[Tags & Groups]
         CM[Comments]
+        SD[Statistics Dashboard]
+        SF[Search & Filter]
+        EI[Export/Import]
+        CE[Color Extraction]
     end
 
     UI --> Store
@@ -76,6 +80,20 @@ sequenceDiagram
 - `Footer`: App-wide footer
 - UI Components (Button, Card, Dialog, etc.)
 
+#### Statistics Dashboard
+
+- `StatsDashboard`: Displays usage statistics and analytics
+- `StatCard`: Individual statistic display
+- `PopularTags`: Shows most used tags
+- `PopularGroups`: Shows most used groups
+
+#### Search & Filter
+
+- `SearchBar`: Global search functionality
+- `TagManager`: Tag creation and management
+- `GroupManager`: Group creation and management
+- `FilterPanel`: Advanced filtering options
+
 ### 2.2 Component Responsibilities
 
 #### Image Management
@@ -101,6 +119,20 @@ sequenceDiagram
 - Search and filtering
 - Sorting and view modes
 
+#### Statistics Dashboard
+
+- Displays usage statistics and analytics
+- Individual statistic display
+- Most used tags
+- Most used groups
+
+#### Search & Filter
+
+- Global search functionality
+- Tag creation and management
+- Group creation and management
+- Advanced filtering options
+
 ## 3. State Management
 
 ### 3.1 Zustand Store Structure
@@ -124,6 +156,11 @@ interface AppState {
 
   // UI State
   showAddImageDialog: boolean;
+
+  // Search & Filter
+  searchQuery: string;
+  selectedTags: string[];
+  selectedGroups: string[];
 }
 ```
 
@@ -144,6 +181,7 @@ interface AppState {
 - **Zustand**: For lightweight state management
 - **Tailwind CSS**: For utility-first styling
 - **Shadcn/ui**: For consistent UI components
+- **ColorThief**: For color extraction from images
 
 ### 4.2 Design Patterns
 
@@ -170,6 +208,7 @@ src/
 │   ├── images-module/   # Image-related components
 │   ├── palettes-module/ # Palette-related components
 │   ├── shared/         # Shared components
+│   ├── dashboard/      # Statistics dashboard components
 │   └── ui/             # UI components
 ├── hooks/              # Custom React hooks
 ├── lib/               # Utility functions
@@ -187,6 +226,10 @@ src/
 - Color extraction API
 - Social sharing features
 - Export functionality
+- Advanced color editor
+- AI-powered suggestions
+- Collaborative features
+- Advanced analytics
 
 ### 5.2 Scalability Considerations
 
