@@ -1,4 +1,4 @@
-# Pallette - Color Palette Generator
+# BrandZone - Color Palette Generator
 
 A modern web application for generating and managing color palettes from images. Built with Next.js, TypeScript, and Tailwind CSS.
 

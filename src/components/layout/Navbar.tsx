@@ -3,57 +3,42 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { BarChart, ImageIcon, Palette } from "lucide-react";
+import { Logo } from "@/components/layout/Logo";
 
-export default function Navbar() {
+const navigation = [
+  { name: "Home", href: "/" },
+  { name: "Dashboard", href: "/dashboard" },
+  { name: "Generator", href: "/generator" },
+  { name: "Palettes", href: "/palettes" },
+];
+
+export function Navigation() {
   const pathname = usePathname();
 
   return (
-    <nav className="border-b">
+    <nav className="bg-white shadow-sm">
       <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          <div className="flex items-center gap-8">
-            <Link href="/" className="text-xl font-bold">
-              Pallette
-            </Link>
-            <div className="flex items-center gap-4">
-              <Link
-                href="/generator"
-                className={cn(
-                  "flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary",
-                  pathname === "/generator"
-                    ? "text-foreground"
-                    : "text-foreground/60"
-                )}
-              >
-                <ImageIcon className="h-4 w-4" />
-                Generator
-              </Link>
-              <Link
-                href="/palettes"
-                className={cn(
-                  "flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary",
-                  pathname === "/palettes"
-                    ? "text-foreground"
-                    : "text-foreground/60"
-                )}
-              >
-                <Palette className="h-4 w-4" />
-                Palettes
-              </Link>
-              <Link
-                href="/dashboard"
-                className={cn(
-                  "flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary",
-                  pathname === "/dashboard"
-                    ? "text-foreground"
-                    : "text-foreground/60"
-                )}
-              >
-                <BarChart className="h-4 w-4" />
-                Dashboard
-              </Link>
+        <div className="flex justify-between h-16">
+          <div className="flex">
+            <div className="flex-shrink-0 flex items-center">
+              <Logo />
             </div>
+          </div>
+          <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={cn(
+                  "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium",
+                  pathname === item.href
+                    ? "border-[#145DA0] text-black"
+                    : "border-transparent text-black hover:border-gray-300 hover:text-gray-700"
+                )}
+              >
+                {item.name}
+              </Link>
+            ))}
           </div>
         </div>
       </div>

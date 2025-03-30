@@ -1,6 +1,6 @@
 import { Inter, Leckerli_One } from "next/font/google";
 import "./globals.css";
-import { Navigation } from "@/components/ui/navigation";
+import { Navigation } from "@/components/layout/Navbar";
 import { Toaster } from "sonner";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
