@@ -74,10 +74,10 @@ describe("AddImageForm", () => {
 
     render(<AddImageForm onSuccess={mockOnSuccess} />);
 
-    const tagInput = screen.getByPlaceholderText(/add tags/i);
+    const tagInput = screen.getByLabelText(/tags/i);
     fireEvent.change(tagInput, { target: { value: "new-tag" } });
 
-    const addTagButton = screen.getByRole("button", { name: /add/i });
+    const addTagButton = screen.getByRole("button", { name: "Add" });
     fireEvent.click(addTagButton);
 
     expect(addTagSpy).toHaveBeenCalledWith("new-tag");

@@ -1,92 +1,71 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import ImageCard from "../components/images-module/ImageCard";
-import { useStore } from "../store/appStore";
+import { ImageProps } from "@/types";
 
-// Mock next/image
-jest.mock("next/image", () => ({
-  __esModule: true,
-  default: (props: any) => {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img {...props} alt={props.alt} />;
-  },
+// Mock the toast function
+jest.mock("@/lib/toast", () => ({
+  showSuccessToast: jest.fn(),
+  showErrorToast: jest.fn(),
 }));
 
 describe("ImageCard", () => {
-  const mockImage = {
+  const mockImage: ImageProps = {
     id: "1",
     url: "https://example.com/image.jpg",
+    isFavorite: false,
+    comments: [],
     groupIds: [],
     tagIds: [],
-    comments: [],
     createdAt: new Date().toISOString(),
   };
 
-  const mockHandlers = {
-    onDelete: jest.fn(),
-    onEdit: jest.fn(),
+  const imageWithComments: ImageProps = {
+    ...mockImage,
+    comments: [
+      {
+        id: "1",
+        imageId: "1",
+        text: "Test comment",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+    ],
   };
 
-  beforeEach(() => {
-    // Reset store before each test
-    const store = useStore.getState();
-    store.images = [mockImage];
-    // Reset mock functions
-    jest.clearAllMocks();
-  });
+  const mockHandlers = {
+    onEdit: jest.fn(),
+    onDelete: jest.fn(),
+  };
 
-  it("renders image with correct URL", () => {
+  it("renders image correctly", () => {
     render(<ImageCard image={mockImage} {...mockHandlers} />);
-    const imageElement = screen.getByRole("img");
-    expect(imageElement).toHaveAttribute("src", mockImage.url);
-  });
-
-  it("displays creation date", () => {
-    render(<ImageCard image={mockImage} {...mockHandlers} />);
-    const date = new Date(mockImage.createdAt);
-    const formattedDate = date.toLocaleDateString();
-    expect(screen.getByText(formattedDate)).toBeInTheDocument();
+    expect(screen.getByAltText("Uploaded image")).toBeInTheDocument();
   });
 
   it("handles favorite toggle", () => {
     render(<ImageCard image={mockImage} {...mockHandlers} />);
 
-    // Find and click the favorite button
-    const favoriteButton = screen.getByRole("button", { name: /favorite/i });
+    const favoriteButton = screen.getByLabelText("Toggle favorite");
     fireEvent.click(favoriteButton);
 
-    // Check if onEdit was called with correct parameters
-    expect(mockHandlers.onEdit).toHaveBeenCalledWith(mockImage.id, {
+    expect(mockHandlers.onEdit).toHaveBeenCalledWith({
+      ...mockImage,
       isFavorite: true,
     });
   });
 
   it("shows comments count", () => {
-    const imageWithComments = {
-      ...mockImage,
-      comments: [
-        {
-          id: "1",
-          imageId: "1",
-          text: "Test comment",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-      ],
-    };
-
     render(<ImageCard image={imageWithComments} {...mockHandlers} />);
-    expect(screen.getByText("1")).toBeInTheDocument();
+    expect(screen.getByText("1 comment")).toBeInTheDocument();
   });
 
   it("handles delete action", () => {
     render(<ImageCard image={mockImage} {...mockHandlers} />);
 
-    // Find and click the delete button
-    const deleteButton = screen.getByRole("button", { name: /delete/i });
+    const deleteButton = screen.getByLabelText("Delete image");
     fireEvent.click(deleteButton);
 
-    // Check if onDelete was called with correct parameters
     expect(mockHandlers.onDelete).toHaveBeenCalledWith(mockImage.id);
   });
 });

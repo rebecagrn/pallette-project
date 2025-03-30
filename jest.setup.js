@@ -1,16 +1,21 @@
+// Learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom";
 
-// Mock Next.js router
-jest.mock("next/router", () => ({
+// Mock next/navigation
+jest.mock("next/navigation", () => ({
   useRouter() {
     return {
-      route: "/",
-      pathname: "",
-      query: "",
-      asPath: "",
       push: jest.fn(),
       replace: jest.fn(),
+      prefetch: jest.fn(),
+      back: jest.fn(),
     };
+  },
+  usePathname() {
+    return "";
+  },
+  useSearchParams() {
+    return new URLSearchParams();
   },
 }));
 
@@ -22,3 +27,10 @@ jest.mock("next/image", () => ({
     return <img {...props} />;
   },
 }));
+
+// Mock crypto.randomUUID
+Object.defineProperty(global, "crypto", {
+  value: {
+    randomUUID: () => "test-uuid",
+  },
+});

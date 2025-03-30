@@ -10,11 +10,12 @@ import { Card, CardContent, CardHeader } from "../ui/card";
 import CommentSection from "../shared/CommentSection";
 import { extractColors } from "@/lib/colorExtractor";
 import { showSuccessToast, showErrorToast } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 
 interface ImageCardProps {
   image: ImageProps;
   onDelete: (id: string) => void;
-  onEdit: (id: string, data: Partial<ImageProps>) => void;
+  onEdit: (updatedImage: ImageProps) => void;
 }
 
 export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
@@ -32,14 +33,18 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    onEdit(image.id, {
+    onEdit({
+      ...image,
       comments: [...image.comments, newComment],
     });
     setComment("");
   };
 
   const handleUpdateComments = (comments: CommentProps[]) => {
-    onEdit(image.id, { comments });
+    onEdit({
+      ...image,
+      comments,
+    });
   };
 
   const handleExtractColors = async () => {
@@ -68,7 +73,10 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
   };
 
   const handleToggleFavorite = () => {
-    onEdit(image.id, { isFavorite: !image.isFavorite });
+    onEdit({
+      ...image,
+      isFavorite: !image.isFavorite,
+    });
   };
 
   return (
@@ -81,14 +89,14 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
           <Button
             variant="ghost"
             size="icon"
+            className={cn(
+              "text-muted-foreground",
+              image.isFavorite && "text-red-500"
+            )}
+            aria-label="Toggle favorite"
             onClick={handleToggleFavorite}
-            className={`h-8 w-8 ${
-              image.isFavorite ? "text-red-500" : "text-muted-foreground"
-            }`}
           >
-            <Heart
-              className={`h-4 w-4 ${image.isFavorite ? "fill-current" : ""}`}
-            />
+            <Heart className={cn(image.isFavorite && "fill-current")} />
           </Button>
           <Button
             variant="ghost"
@@ -102,8 +110,9 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
           <Button
             variant="ghost"
             size="icon"
+            className="hover:text-destructive"
+            aria-label="Delete image"
             onClick={() => onDelete(image.id)}
-            className="h-8 w-8 hover:text-destructive"
           >
             <Trash2 className="h-4 w-4" />
           </Button>

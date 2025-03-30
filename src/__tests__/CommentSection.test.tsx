@@ -3,6 +3,12 @@ import "@testing-library/jest-dom";
 import CommentSection from "../components/shared/CommentSection";
 import { CommentProps } from "@/types";
 
+// Mock the toast function
+jest.mock("@/lib/toast", () => ({
+  showSuccessToast: jest.fn(),
+  showErrorToast: jest.fn(),
+}));
+
 describe("CommentSection", () => {
   const mockComments: CommentProps[] = [
     {
@@ -49,7 +55,7 @@ describe("CommentSection", () => {
       />
     );
 
-    expect(screen.getByText("2")).toBeInTheDocument();
+    expect(screen.getByText(/2 comments/)).toBeInTheDocument();
   });
 
   it("handles comment deletion", () => {
@@ -61,7 +67,7 @@ describe("CommentSection", () => {
       />
     );
 
-    const deleteButtons = screen.getAllByRole("button", { name: /delete/i });
+    const deleteButtons = screen.getAllByLabelText("Delete comment");
     fireEvent.click(deleteButtons[0]);
 
     expect(mockOnUpdate).toHaveBeenCalledWith(
@@ -79,7 +85,7 @@ describe("CommentSection", () => {
     );
 
     // Start editing
-    const editButtons = screen.getAllByRole("button", { name: /edit/i });
+    const editButtons = screen.getAllByLabelText("Edit comment");
     fireEvent.click(editButtons[0]);
 
     // Find textarea and update text
@@ -87,7 +93,7 @@ describe("CommentSection", () => {
     fireEvent.change(textarea, { target: { value: "Updated comment" } });
 
     // Save changes
-    const saveButton = screen.getByRole("button", { name: /save/i });
+    const saveButton = screen.getByText("Save");
     fireEvent.click(saveButton);
 
     expect(mockOnUpdate).toHaveBeenCalledWith(
@@ -109,7 +115,7 @@ describe("CommentSection", () => {
       />
     );
 
-    expect(screen.getByText(/no comments yet/i)).toBeInTheDocument();
+    expect(screen.getByText("No comments yet")).toBeInTheDocument();
   });
 
   it("cancels comment editing", () => {
@@ -122,7 +128,7 @@ describe("CommentSection", () => {
     );
 
     // Start editing
-    const editButtons = screen.getAllByRole("button", { name: /edit/i });
+    const editButtons = screen.getAllByLabelText("Edit comment");
     fireEvent.click(editButtons[0]);
 
     // Find textarea and update text
@@ -130,7 +136,7 @@ describe("CommentSection", () => {
     fireEvent.change(textarea, { target: { value: "Updated comment" } });
 
     // Cancel editing
-    const cancelButton = screen.getByRole("button", { name: /cancel/i });
+    const cancelButton = screen.getByText("Cancel");
     fireEvent.click(cancelButton);
 
     // Original text should still be present

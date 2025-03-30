@@ -5,6 +5,7 @@ import { CommentProps } from "@/types";
 import { Check, MessageSquare, Pencil, X } from "lucide-react";
 import { stringTrimToDots } from "@/lib/utils";
 import { showSuccessToast } from "@/lib/toast";
+
 interface CommentSectionProps {
   itemId: string;
   comments: CommentProps[];
@@ -72,65 +73,76 @@ export default function CommentSection({
 
   return (
     <div className="space-y-4">
-      {comments.length > 0 && (
-        <div className="space-y-2">
-          {comments.map((comment) => (
-            <div
-              key={comment.id}
-              className="group flex items-start justify-between gap-2 text-sm text-muted-foreground"
-            >
-              {editingCommentId === comment.id ? (
-                <div className="flex-1 space-y-2">
-                  <Textarea
-                    value={editedText}
-                    onChange={(e) => setEditedText(e.target.value)}
-                    className="min-h-[60px] bg-background/60 backdrop-blur-sm"
-                  />
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      onClick={() => handleUpdateComment(comment.id)}
-                      className="bg-black hover:bg-slate-950"
-                    >
-                      <Check className="h-4 w-4 mr-1" />
-                      Save
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setEditingCommentId(null)}
-                    >
-                      <X className="h-4 w-4 mr-1" />
-                      Cancel
-                    </Button>
+      {comments.length > 0 ? (
+        <>
+          <div className="text-sm text-muted-foreground">
+            {comments.length} {comments.length === 1 ? "comment" : "comments"}
+          </div>
+          <div className="space-y-2">
+            {comments.map((comment) => (
+              <div
+                key={comment.id}
+                className="group flex items-start justify-between gap-2 text-sm text-muted-foreground"
+              >
+                {editingCommentId === comment.id ? (
+                  <div className="flex-1 space-y-2">
+                    <Textarea
+                      value={editedText}
+                      onChange={(e) => setEditedText(e.target.value)}
+                      className="min-h-[60px] bg-background/60 backdrop-blur-sm"
+                    />
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() => handleUpdateComment(comment.id)}
+                        className="bg-black hover:bg-slate-950"
+                      >
+                        <Check className="h-4 w-4 mr-1" />
+                        Save
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setEditingCommentId(null)}
+                      >
+                        <X className="h-4 w-4 mr-1" />
+                        Cancel
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <>
-                  <p className="flex-1">{stringTrimToDots(comment.text, 25)}</p>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-6 w-6"
-                      onClick={() => handleEditComment(comment.id)}
-                    >
-                      <Pencil className="h-3 w-3" />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-6 w-6 hover:text-destructive"
-                      onClick={() => handleDeleteComment(comment.id)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </div>
-                </>
-              )}
-            </div>
-          ))}
-        </div>
+                ) : (
+                  <>
+                    <p className="flex-1">
+                      {stringTrimToDots(comment.text, 25)}
+                    </p>
+                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-6 w-6"
+                        onClick={() => handleEditComment(comment.id)}
+                        aria-label="Edit comment"
+                      >
+                        <Pencil className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-6 w-6 hover:text-destructive"
+                        onClick={() => handleDeleteComment(comment.id)}
+                        aria-label="Delete comment"
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <p className="text-sm text-muted-foreground">No comments yet</p>
       )}
 
       {isEditing ? (
