@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Upload } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
+import { showSuccessToast, showErrorToast } from "@/lib/toast";
 
 interface AddImageFormProps {
   onSuccess?: () => void;
@@ -21,16 +21,11 @@ export default function AddImageForm({ onSuccess }: AddImageFormProps) {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { addImage, tags, groups, addTag } = useStore();
-  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url.trim()) {
-      toast({
-        title: "Error",
-        description: "Please provide an image URL or upload a file",
-        variant: "destructive",
-      });
+    if (!url) {
+      showErrorToast("Please enter an image URL");
       return;
     }
 
@@ -48,10 +43,7 @@ export default function AddImageForm({ onSuccess }: AddImageFormProps) {
     setTagInput("");
     onSuccess?.();
 
-    toast({
-      title: "Success",
-      description: "Image added successfully",
-    });
+    showSuccessToast("Image added successfully");
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,11 +51,7 @@ export default function AddImageForm({ onSuccess }: AddImageFormProps) {
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      toast({
-        title: "Error",
-        description: "Please upload an image file",
-        variant: "destructive",
-      });
+      showErrorToast("Please upload an image file");
       return;
     }
 
@@ -73,16 +61,9 @@ export default function AddImageForm({ onSuccess }: AddImageFormProps) {
       // For now, we'll create a local URL
       const imageUrl = URL.createObjectURL(file);
       setUrl(imageUrl);
-      toast({
-        title: "Success",
-        description: "Image uploaded successfully",
-      });
+      showSuccessToast("Image uploaded successfully");
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to upload image",
-        variant: "destructive",
-      });
+      showErrorToast("Failed to upload image");
     } finally {
       setIsUploading(false);
     }

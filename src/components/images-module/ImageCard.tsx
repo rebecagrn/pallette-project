@@ -9,7 +9,7 @@ import { Badge } from "../ui/badge";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import CommentSection from "../shared/CommentSection";
 import { extractColors } from "@/lib/colorExtractor";
-import { useToast } from "@/components/ui/use-toast";
+import { showSuccessToast, showErrorToast } from "@/lib/toast";
 
 interface ImageCardProps {
   image: ImageProps;
@@ -22,7 +22,6 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
   const [isExtracting, setIsExtracting] = useState(false);
   const [comment, setComment] = useState("");
   const { tags, groups, addPalette } = useStore();
-  const { toast } = useToast();
 
   const handleAddComment = () => {
     if (!comment.trim()) return;
@@ -60,16 +59,9 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
         isFavorite: false,
       });
 
-      toast({
-        title: "Success",
-        description: "Colors extracted and palette created successfully",
-      });
+      showSuccessToast("Colors extracted and palette created successfully");
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to extract colors from image",
-        variant: "destructive",
-      });
+      showErrorToast("Failed to extract colors from image");
     } finally {
       setIsExtracting(false);
     }

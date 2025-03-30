@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
 import { Download, Upload } from "lucide-react";
 import { ColorPaletteProps } from "@/types";
+import { showSuccessToast, showErrorToast } from "@/lib/toast";
 
 interface ExportImportPaletteProps {
   palette: ColorPaletteProps;
@@ -14,7 +14,6 @@ export default function ExportImportPalette({
   onImport,
 }: ExportImportPaletteProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { toast } = useToast();
 
   const handleExport = () => {
     try {
@@ -41,25 +40,18 @@ export default function ExportImportPalette({
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      toast({
-        title: "Success",
-        description: "Palette exported successfully",
-      });
+      showSuccessToast("Palette exported successfully");
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to export palette",
-        variant: "destructive",
-      });
+      showErrorToast("Failed to export palette");
     }
   };
 
-  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         const content = e.target?.result as string;
         const importedData = JSON.parse(content);
@@ -77,17 +69,11 @@ export default function ExportImportPalette({
           comments: importedData.comments || [],
         });
 
-        toast({
-          title: "Success",
-          description: "Palette imported successfully",
-        });
+        showSuccessToast("Palette imported successfully");
       } catch (error) {
-        toast({
-          title: "Error",
-          description:
-            "Failed to import palette. Please check the file format.",
-          variant: "destructive",
-        });
+        showErrorToast(
+          "Failed to import palette. Please check the file format."
+        );
       }
     };
 

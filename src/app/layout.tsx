@@ -1,7 +1,7 @@
 import { Inter, Leckerli_One } from "next/font/google";
 import "./globals.css";
 import { Navigation } from "@/components/ui/navigation";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "sonner";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 
@@ -64,7 +64,7 @@ export default function RootLayout({
           <Navigation />
           <main className="flex-1">{children}</main>
         </div>
-        <Toaster />
+        <Toaster richColors position="top-center" />
       </body>
     </html>
   );

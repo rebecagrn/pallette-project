@@ -2,10 +2,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { CommentProps } from "@/types";
-import { useStore } from "@/store/appStore";
 import { Check, MessageSquare, Pencil, X } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { stringTrimToDots } from "@/lib/utils";
+import { showSuccessToast } from "@/lib/toast";
 interface CommentSectionProps {
   itemId: string;
   comments: CommentProps[];
@@ -21,7 +20,6 @@ export default function CommentSection({
   const [newComment, setNewComment] = useState("");
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editedText, setEditedText] = useState("");
-  const { toast } = useToast();
 
   const handleAddComment = () => {
     if (!newComment.trim()) return;
@@ -36,10 +34,7 @@ export default function CommentSection({
 
     onUpdate([...comments, comment]);
     setNewComment("");
-    toast({
-      title: "Success",
-      description: "Comment added successfully",
-    });
+    showSuccessToast("Comment added successfully");
   };
 
   const handleEditComment = (commentId: string) => {
@@ -64,10 +59,7 @@ export default function CommentSection({
     onUpdate(updatedComments);
     setEditingCommentId(null);
     setEditedText("");
-    toast({
-      title: "Success",
-      description: "Comment updated successfully",
-    });
+    showSuccessToast("Comment updated successfully");
   };
 
   const handleDeleteComment = (commentId: string) => {
@@ -75,10 +67,7 @@ export default function CommentSection({
       (comment) => comment.id !== commentId
     );
     onUpdate(updatedComments);
-    toast({
-      title: "Success",
-      description: "Comment deleted successfully",
-    });
+    showSuccessToast("Comment deleted successfully");
   };
 
   return (

@@ -3,10 +3,10 @@ import { useStore } from "@/store/appStore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/hooks/use-toast";
 import { Trash2, Heart } from "lucide-react";
 import CommentSection from "../shared/CommentSection";
 import ExportImportPalette from "./ExportImportPalette";
+import { showSuccessToast, showErrorToast } from "@/lib/toast";
 
 interface PaletteCardProps {
   palette: ColorPaletteProps;
@@ -20,22 +20,37 @@ export default function PaletteCard({
   onEdit,
 }: PaletteCardProps) {
   const { tags } = useStore();
-  const { toast } = useToast();
 
   const handleToggleFavorite = () => {
     onEdit(palette.id, {
       isFavorite: !palette.isFavorite,
     });
-    toast({
-      title: "Success",
-      description: palette.isFavorite
-        ? "Removed from favorites"
-        : "Added to favorites",
-    });
+    showSuccessToast(
+      palette.isFavorite ? "Removed from favorites" : "Added to favorites"
+    );
+  };
+
+  const handleDelete = () => {
+    onDelete(palette.id);
+    showSuccessToast("Palette deleted successfully");
   };
 
   const handleUpdateComments = (comments: CommentProps[]) => {
     onEdit(palette.id, { comments });
+  };
+
+  const handleCopyColor = (color: string) => {
+    navigator.clipboard.writeText(color);
+    showSuccessToast(`Color ${color} copied to clipboard`);
+  };
+
+  const handleExport = () => {
+    try {
+      // ... existing export code ...
+      showSuccessToast("Palette exported successfully");
+    } catch (error) {
+      showErrorToast("Failed to export palette");
+    }
   };
 
   return (
@@ -63,7 +78,7 @@ export default function PaletteCard({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => onDelete(palette.id)}
+            onClick={handleDelete}
             className="h-8 w-8 hover:text-destructive"
           >
             <Trash2 className="h-4 w-4" />

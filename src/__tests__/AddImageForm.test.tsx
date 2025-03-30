@@ -12,13 +12,6 @@ jest.mock("next/image", () => ({
   },
 }));
 
-// Mock the toast hook
-jest.mock("@/hooks/use-toast", () => ({
-  useToast: () => ({
-    toast: jest.fn(),
-  }),
-}));
-
 describe("AddImageForm", () => {
   const mockOnSuccess = jest.fn();
 

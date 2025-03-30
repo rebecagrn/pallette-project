@@ -3,7 +3,7 @@ import { useStore } from "@/store/appStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { showSuccessToast, showErrorToast } from "@/lib/toast";
 
 interface AddPaletteFormProps {
   onSuccess?: () => void;
@@ -16,38 +16,38 @@ export default function AddPaletteForm({ onSuccess }: AddPaletteFormProps) {
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const { addPalette, tags, addTag } = useStore();
-  const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || colors.length === 0) {
-      toast({
-        title: "Validation Error",
-        description: "Please provide a name and at least one color.",
-        variant: "destructive",
-      });
+    if (!name.trim()) {
+      showErrorToast("Please enter a palette name");
       return;
     }
 
-    addPalette({
-      name,
-      colors,
-      tagIds: selectedTagIds,
-      groupIds: [],
-      comments: [],
-      isFavorite: false,
-    });
+    if (colors.length === 0) {
+      showErrorToast("Please add at least one color");
+      return;
+    }
 
-    toast({
-      title: "Success",
-      description: "Palette created successfully!",
-    });
+    try {
+      addPalette({
+        name,
+        colors,
+        tagIds: selectedTagIds,
+        groupIds: [],
+        comments: [],
+        isFavorite: false,
+      });
 
-    setName("");
-    setColors([]);
-    setSelectedTagIds([]);
-    setTagInput("");
-    onSuccess?.();
+      showSuccessToast("Palette created successfully");
+      setName("");
+      setColors([]);
+      setSelectedTagIds([]);
+      setTagInput("");
+      onSuccess?.();
+    } catch (error) {
+      showErrorToast("Failed to create palette");
+    }
   };
 
   const handleAddColor = (e: React.FormEvent) => {
@@ -76,11 +76,7 @@ export default function AddPaletteForm({ onSuccess }: AddPaletteFormProps) {
         setSelectedTagIds([...selectedTagIds, existingTag.id]);
         setTagInput("");
       } else {
-        toast({
-          title: "Duplicate Tag",
-          description: "This tag is already added to the palette.",
-          variant: "destructive",
-        });
+        showErrorToast("This tag is already added to the palette");
       }
     } else {
       const newTagId = crypto.randomUUID();
