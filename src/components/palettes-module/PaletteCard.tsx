@@ -1,14 +1,11 @@
-import { useState } from "react";
 import { ColorPaletteProps, CommentProps } from "@/types";
 import { useStore } from "@/store/appStore";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Star, StarOff, Trash2, Heart } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Trash2, Heart } from "lucide-react";
 import CommentSection from "../shared/CommentSection";
-import { stringTrimToDots } from "@/lib/utils";
 import ExportImportPalette from "./ExportImportPalette";
 
 interface PaletteCardProps {
@@ -43,9 +40,6 @@ export default function PaletteCard({
 
   return (
     <Card className="group relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-gradient-to-bl from-purple-500/20 to-transparent rounded-full transform translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity" />
-      <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-gradient-to-tr from-blue-500/20 to-transparent rounded-full transform -translate-x-1/2 translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity" />
-
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div className="space-y-1">
           <h3 className="font-semibold leading-none">{palette.name}</h3>

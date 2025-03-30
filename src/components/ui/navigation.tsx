@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Logo } from "../layout/logo";
+import { Logo } from "@/components/layout/Logo";
 
 const navigation = [
   { name: "Home", href: "/" },
+  { name: "Dashboard", href: "/dashboard" },
   { name: "Generator", href: "/generator" },
   { name: "Palettes", href: "/palettes" },
 ];

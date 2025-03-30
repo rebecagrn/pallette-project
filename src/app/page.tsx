@@ -4,7 +4,6 @@ import { Card } from "@/components/ui/card";
 import { DEMO_COLOR_PALETTES, DEMO_PALETTE_COLORS } from "@/types/constants";
 import Footer from "@/components/layout/Footer";
 import Image from "next/image";
-import StatsDashboard from "@/components/dashboard/StatsDashboard";
 
 export default function Home() {
   return (
@@ -113,8 +112,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-        <StatsDashboard />
       </main>
 
       <Footer />
