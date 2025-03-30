@@ -3,6 +3,7 @@ import "./globals.css";
 import { Navigation } from "@/components/ui/navigation";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
+import type { Metadata } from "next";
 
 const inter = Inter({ subsets: ["latin"] });
 const leckerliOne = Leckerli_One({
@@ -10,6 +11,39 @@ const leckerliOne = Leckerli_One({
   subsets: ["latin"],
   variable: "--font-leckerli",
 });
+
+export const metadata: Metadata = {
+  title: {
+    default: "Palette Project - Color Palette Generator",
+    template: "%s | Palette Project",
+  },
+  description:
+    "Generate beautiful color palettes from your images. Upload photos and extract perfect color combinations for your design projects.",
+  keywords: [
+    "color palette",
+    "color generator",
+    "design tools",
+    "color extraction",
+    "image colors",
+  ],
+  authors: [{ name: "Palette Project" }],
+  creator: "Palette Project",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://palette-project.vercel.app",
+    title: "Palette Project - Color Palette Generator",
+    description:
+      "Generate beautiful color palettes from your images. Upload photos and extract perfect color combinations for your design projects.",
+    siteName: "Palette Project",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Palette Project - Color Palette Generator",
+    description:
+      "Generate beautiful color palettes from your images. Upload photos and extract perfect color combinations for your design projects.",
+  },
+};
 
 export default function RootLayout({
   children,
