@@ -2,8 +2,7 @@ import { ImageProps, CommentProps } from "@/types";
 import { useState } from "react";
 import { useStore } from "@/store/appStore";
 import { Button } from "../ui/button";
-import Image from "next/image";
-import { Check, Trash2, MessageSquare, Heart, Palette } from "lucide-react";
+import { Trash2, Heart, Palette } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import { Badge } from "../ui/badge";
 import { Card, CardContent, CardHeader } from "../ui/card";
@@ -15,7 +14,7 @@ import { cn } from "@/lib/utils";
 interface ImageCardProps {
   image: ImageProps;
   onDelete: (id: string) => void;
-  onEdit: (updatedImage: ImageProps) => void;
+  onEdit: (id: string, data: Partial<ImageProps>) => void;
 }
 
 export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
@@ -33,16 +32,14 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    onEdit({
-      ...image,
+    onEdit(image.id, {
       comments: [...image.comments, newComment],
     });
     setComment("");
   };
 
   const handleUpdateComments = (comments: CommentProps[]) => {
-    onEdit({
-      ...image,
+    onEdit(image.id, {
       comments,
     });
   };
@@ -73,8 +70,7 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
   };
 
   const handleToggleFavorite = () => {
-    onEdit({
-      ...image,
+    onEdit(image.id, {
       isFavorite: !image.isFavorite,
     });
   };
