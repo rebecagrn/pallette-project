@@ -61,12 +61,6 @@ public/worker-*.js.map
 # Package files
 package-lock.json
 
-# TypeScript files
-tsconfig.json
-
-# Tailwind CSS files
-tailwind.config.js
-
 # Next.js config
 next.config.js
 
