@@ -2,6 +2,14 @@
 
 A modern web application for generating and managing color palettes from images. Built with Next.js, TypeScript, and Tailwind CSS.
 
+## Live Demo
+
+Visit the live application at: [brandzone-project.vercel.app](https://brandzone-project.vercel.app)
+
+## Project Demo
+
+https://github.com/user-attachments/assets/cefee8e4-f8ac-485d-8c92-22b6ffecfa36
+
 ## Features
 
 ### Image Management
