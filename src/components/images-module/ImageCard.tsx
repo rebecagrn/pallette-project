@@ -1,5 +1,5 @@
 import { ImageProps, CommentProps } from "@/types";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { useStore } from "@/store/appStore";
 import { Button } from "../ui/button";
 import { Trash2, Heart, Palette } from "lucide-react";
@@ -17,8 +17,12 @@ interface ImageCardProps {
   onEdit: (id: string, data: Partial<ImageProps>) => void;
 }
 
-export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
-  const [isEditing, setIsEditing] = useState(false);
+const ImageCard = memo(function ImageCard({
+  image,
+  onDelete,
+  onEdit,
+}: ImageCardProps) {
+  const [isEditing] = useState(false);
   const [isExtracting, setIsExtracting] = useState(false);
   const [comment, setComment] = useState("");
   const { tags, groups, addPalette } = useStore();
@@ -177,4 +181,6 @@ export default function ImageCard({ image, onDelete, onEdit }: ImageCardProps) {
       </CardContent>
     </Card>
   );
-}
+});
+
+export default ImageCard;

@@ -1,5 +1,5 @@
 import { ImageProps } from "@/types";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useStore } from "@/store/appStore";
 import ImageCard from "./ImageCard";
 import { Badge } from "@/components/ui/badge";
@@ -24,31 +24,30 @@ export default function ImageGrid({
   const [searchQuery, setSearchQuery] = useState("");
   const { groups, tags } = useStore();
 
-  const filteredImages = images.filter((image) => {
-    const matchesGroups =
-      selectedGroupIds.length === 0 ||
-      selectedGroupIds.some((groupId) => image.groupIds.includes(groupId));
+  const filteredImages = useMemo(() => {
+    return images.filter((image) => {
+      const matchesGroups =
+        selectedGroupIds.length === 0 ||
+        selectedGroupIds.some((groupId) => image.groupIds.includes(groupId));
 
-    const matchesTags =
-      selectedTagIds.length === 0 ||
-      selectedTagIds.some((tagId) => image.tagIds.includes(tagId));
+      const matchesTags =
+        selectedTagIds.length === 0 ||
+        selectedTagIds.some((tagId) => image.tagIds.includes(tagId));
 
-    const matchesSearch =
-      searchQuery === "" ||
-      // Search in image URL
-      image.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      // Search in comments
-      image.comments.some((comment) =>
-        comment.text.toLowerCase().includes(searchQuery.toLowerCase())
-      ) ||
-      // Search in associated tags
-      image.tagIds.some((tagId) => {
-        const tag = tags.find((t) => t.id === tagId);
-        return tag?.name.toLowerCase().includes(searchQuery.toLowerCase());
-      });
+      const matchesSearch =
+        searchQuery === "" ||
+        image.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        image.comments.some((comment) =>
+          comment.text.toLowerCase().includes(searchQuery.toLowerCase())
+        ) ||
+        image.tagIds.some((tagId) => {
+          const tag = tags.find((t) => t.id === tagId);
+          return tag?.name.toLowerCase().includes(searchQuery.toLowerCase());
+        });
 
-    return matchesGroups && matchesTags && matchesSearch;
-  });
+      return matchesGroups && matchesTags && matchesSearch;
+    });
+  }, [images, selectedGroupIds, selectedTagIds, searchQuery, tags]);
 
   const handleToggleGroup = (groupId: string) => {
     setSelectedGroupIds((prev) =>

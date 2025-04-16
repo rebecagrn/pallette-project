@@ -1,6 +1,6 @@
 "use client";
 
-import StatsDashboard from "@/components/dashboard/StatsDashboard";
+import StatsDashboard from "@/components/dashboard-module/StatsDashboard";
 
 export default function DashboardPage() {
   return (
