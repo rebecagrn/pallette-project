@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Upload } from "lucide-react";
-import Image from "next/image";
 import { showSuccessToast, showErrorToast } from "@/lib/toast";
 
 interface AddImageFormProps {
@@ -140,8 +139,15 @@ export default function AddImageForm({ onSuccess }: AddImageFormProps) {
             </div>
 
             {url && (
-              <div className="relative w-full max-w-[200px] aspect-square rounded-lg overflow-hidden bg-background/60 backdrop-blur-sm">
-                <Image src={url} alt="Preview" className="object-cover" fill />
+              <div className="relative w-full max-w-[200px] aspect-square rounded-lg overflow-hidden bg-muted">
+                <img
+                  src={url}
+                  alt="Preview"
+                  className="object-cover w-full h-full"
+                  onError={(event) => {
+                    event.currentTarget.style.display = "none"
+                  }}
+                />
               </div>
             )}
           </div>

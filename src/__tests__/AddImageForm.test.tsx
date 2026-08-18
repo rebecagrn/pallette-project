@@ -3,15 +3,6 @@ import "@testing-library/jest-dom";
 import AddImageForm from "../components/images-module/AddImageForm";
 import { useStore } from "../store/appStore";
 
-// Mock next/image
-jest.mock("next/image", () => ({
-  __esModule: true,
-  default: (props: any) => {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img {...props} alt={props.alt} />;
-  },
-}));
-
 describe("AddImageForm", () => {
   const mockOnSuccess = jest.fn();
 
