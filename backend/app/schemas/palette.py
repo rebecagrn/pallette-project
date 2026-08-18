@@ -39,6 +39,14 @@ class GeneratePaletteRequest(BaseModel):
     color_count: int = Field(default=5, ge=3, le=10)
     base_colors: List[str] = Field(default_factory=list, max_length=10)
 
+    @field_validator("prompt")
+    @classmethod
+    def strip_prompt(cls, prompt: str) -> str:
+        stripped = prompt.strip()
+        if len(stripped) < 3:
+            raise ValueError("Prompt must be at least 3 characters")
+        return stripped
+
     @field_validator("base_colors")
     @classmethod
     def validate_hex_colors(cls, colors: List[str]) -> List[str]:

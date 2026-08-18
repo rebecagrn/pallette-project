@@ -9,6 +9,7 @@ from starlette.responses import JSONResponse, Response
 GENERATE_PATH_SUFFIX = "/palettes/generate"
 MAX_REQUESTS = 20
 WINDOW_SECONDS = 60
+MAX_TRACKED_IPS = 5000
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
@@ -24,15 +25,25 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         client_host = request.client.host if request.client else "unknown"
         now = time()
         window_start = now - WINDOW_SECONDS
+        if len(self._hits) > MAX_TRACKED_IPS:
+            stale_hosts = [
+                host
+                for host, timestamps in self._hits.items()
+                if not any(timestamp > window_start for timestamp in timestamps)
+            ]
+            for host in stale_hosts:
+                del self._hits[host]
         recent_hits = [
             timestamp
             for timestamp in self._hits[client_host]
             if timestamp > window_start
         ]
         if len(recent_hits) >= MAX_REQUESTS:
+            self._hits[client_host] = recent_hits
             return JSONResponse(
                 {"detail": "Too many requests. Try again shortly."},
                 status_code=429,
+                headers={"Retry-After": "60"},
             )
         recent_hits.append(now)
         self._hits[client_host] = recent_hits

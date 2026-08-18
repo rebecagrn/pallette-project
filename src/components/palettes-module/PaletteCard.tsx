@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Trash2, Heart, Copy, ChevronDown } from "lucide-react"
 import CommentSection from "../shared/CommentSection"
 import ExportImportPalette from "./ExportImportPalette"
-import { showSuccessToast } from "@/lib/toast"
+import { showSuccessToast, showErrorToast } from "@/lib/toast"
 import { cn } from "@/lib/utils"
 
 interface PaletteCardProps {
@@ -30,14 +30,22 @@ export default function PaletteCard({
     )
   }
 
-  const handleCopyColor = (color: string) => {
-    navigator.clipboard.writeText(color)
-    showSuccessToast(`Copied ${color}`)
+  const handleCopyColor = async (color: string) => {
+    try {
+      await navigator.clipboard.writeText(color)
+      showSuccessToast(`Copied ${color}`)
+    } catch {
+      showErrorToast("Could not copy color")
+    }
   }
 
-  const handleCopyAll = () => {
-    navigator.clipboard.writeText(palette.colors.join(", "))
-    showSuccessToast("All colors copied")
+  const handleCopyAll = async () => {
+    try {
+      await navigator.clipboard.writeText(palette.colors.join(", "))
+      showSuccessToast("All colors copied")
+    } catch {
+      showErrorToast("Could not copy colors")
+    }
   }
 
   return (
@@ -79,11 +87,7 @@ export default function PaletteCard({
             >
               <Copy className="h-4 w-4" />
             </Button>
-            <ExportImportPalette
-              palette={palette}
-              onImport={(data) => onEdit(palette.id, data)}
-              compact
-            />
+            <ExportImportPalette palette={palette} compact />
             <Button
               variant="ghost"
               size="icon"

@@ -1,6 +1,15 @@
+import json
+
 from fastapi.testclient import TestClient
+from starlette.applications import Starlette
+from starlette.responses import JSONResponse
+from starlette.routing import Route
+from starlette.testclient import TestClient as StarletteTestClient
 
 from app.main import app
+from app.middleware.rate_limit import MAX_REQUESTS, RateLimitMiddleware
+from app.schemas.palette import GeneratePaletteRequest
+from app.services.ai_palette_service import _parse_ai_response
 
 client = TestClient(app)
 
@@ -113,3 +122,49 @@ def test_generate_palette_invalid_color_count():
         json={"prompt": "valid prompt here", "color_count": 2},
     )
     assert response.status_code == 422
+
+
+def test_generate_palette_rejects_whitespace_prompt():
+    response = client.post(
+        "/api/v1/palettes/generate",
+        json={"prompt": "   ", "color_count": 5},
+    )
+    assert response.status_code == 422
+
+
+def test_parse_ai_response_pads_to_color_count():
+    request = GeneratePaletteRequest(
+        prompt="warm sunset over the ocean",
+        color_count=5,
+    )
+    content = json.dumps(
+        {
+            "name": "Short Palette",
+            "description": "Only three colors",
+            "colors": ["#FF0000", "#00FF00", "#0000FF"],
+            "mood": "warm",
+            "style": "minimal",
+        }
+    )
+    palette = _parse_ai_response(content, request)
+    assert len(palette.colors) == 5
+    assert palette.colors[:3] == ["#FF0000", "#00FF00", "#0000FF"]
+
+
+def test_generate_rate_limit():
+    async def generate(_request):
+        return JSONResponse({"ok": True})
+
+    isolated_app = Starlette(
+        routes=[
+            Route("/api/v1/palettes/generate", generate, methods=["POST"]),
+        ]
+    )
+    isolated_app.add_middleware(RateLimitMiddleware)
+    isolated_client = StarletteTestClient(isolated_app)
+    for _ in range(MAX_REQUESTS):
+        response = isolated_client.post("/api/v1/palettes/generate")
+        assert response.status_code == 200
+    limited = isolated_client.post("/api/v1/palettes/generate")
+    assert limited.status_code == 429
+

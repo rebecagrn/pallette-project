@@ -116,6 +116,14 @@ export const useStore = create<AppState>()(
       removeGroup: (id: string) =>
         set((state) => ({
           groups: state.groups.filter((group) => group.id !== id),
+          images: state.images.map((image) => ({
+            ...image,
+            groupIds: image.groupIds.filter((groupId) => groupId !== id),
+          })),
+          palettes: state.palettes.map((palette) => ({
+            ...palette,
+            groupIds: palette.groupIds.filter((groupId) => groupId !== id),
+          })),
         })),
 
       updateGroup: (id, data) =>
@@ -136,6 +144,14 @@ export const useStore = create<AppState>()(
       removeTag: (id: string) =>
         set((state) => ({
           tags: state.tags.filter((tag) => tag.id !== id),
+          images: state.images.map((image) => ({
+            ...image,
+            tagIds: image.tagIds.filter((tagId) => tagId !== id),
+          })),
+          palettes: state.palettes.map((palette) => ({
+            ...palette,
+            tagIds: palette.tagIds.filter((tagId) => tagId !== id),
+          })),
         })),
 
       updateTag: (id, name: string) =>
@@ -162,23 +178,28 @@ export const useStore = create<AppState>()(
       name: "brand-zone-storage",
       storage: {
         getItem: (name) => {
-          const str = localStorage.getItem(name);
-          if (!str) return null;
-          const data = JSON.parse(str);
-          if (data.state) {
-            data.state.images = data.state.images.map((img: any) => ({
-              ...img,
-              createdAt: img.createdAt,
-            }));
-            data.state.palettes = data.state.palettes.map((palette: any) => ({
-              ...palette,
-              createdAt: palette.createdAt,
-            }));
+          try {
+            const str = localStorage.getItem(name);
+            if (!str) return null;
+            const data = JSON.parse(str);
+            if (!data?.state) return data;
+            data.state.images = Array.isArray(data.state.images)
+              ? data.state.images
+              : [];
+            data.state.palettes = Array.isArray(data.state.palettes)
+              ? data.state.palettes
+              : [];
+            return data;
+          } catch {
+            return null;
           }
-          return data;
         },
         setItem: (name, value) => {
-          localStorage.setItem(name, JSON.stringify(value));
+          try {
+            localStorage.setItem(name, JSON.stringify(value));
+          } catch (error) {
+            console.error("Failed to persist BrandZone state", error);
+          }
         },
         removeItem: (name) => localStorage.removeItem(name),
       },

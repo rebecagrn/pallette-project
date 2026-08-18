@@ -3,11 +3,12 @@ import { useStore } from "../store/appStore";
 
 describe("App Store - Tags and Groups", () => {
   beforeEach(() => {
-    // Clear the store before each test
     const store = useStore.getState();
     act(() => {
       store.tags = [];
       store.groups = [];
+      store.images = [];
+      store.palettes = [];
     });
   });
 
@@ -40,6 +41,34 @@ describe("App Store - Tags and Groups", () => {
       });
 
       expect(useStore.getState().tags).toHaveLength(0);
+    });
+
+    it("should strip removed tag ids from images and palettes", () => {
+      const store = useStore.getState();
+      let tagId = "";
+      act(() => {
+        tagId = store.addTag("Brand");
+        store.addImage({
+          url: "https://example.com/image.jpg",
+          groupIds: [],
+          tagIds: [tagId],
+          comments: [],
+        });
+        store.addPalette({
+          name: "Tagged",
+          colors: ["#FF0000"],
+          groupIds: [],
+          tagIds: [tagId],
+          comments: [],
+        });
+      });
+
+      act(() => {
+        useStore.getState().removeTag(tagId);
+      });
+
+      expect(useStore.getState().images[0].tagIds).toEqual([]);
+      expect(useStore.getState().palettes[0].tagIds).toEqual([]);
     });
 
     it("should update a tag name", () => {
@@ -107,6 +136,36 @@ describe("App Store - Tags and Groups", () => {
       });
 
       expect(useStore.getState().groups).toHaveLength(0);
+    });
+
+    it("should strip removed group ids from images and palettes", () => {
+      const store = useStore.getState();
+      act(() => {
+        store.addGroup("Campaign");
+      });
+      const groupId = useStore.getState().groups[0].id;
+      act(() => {
+        store.addImage({
+          url: "https://example.com/image.jpg",
+          groupIds: [groupId],
+          tagIds: [],
+          comments: [],
+        });
+        store.addPalette({
+          name: "Grouped",
+          colors: ["#00FF00"],
+          groupIds: [groupId],
+          tagIds: [],
+          comments: [],
+        });
+      });
+
+      act(() => {
+        useStore.getState().removeGroup(groupId);
+      });
+
+      expect(useStore.getState().images[0].groupIds).toEqual([]);
+      expect(useStore.getState().palettes[0].groupIds).toEqual([]);
     });
 
     it("should update a group", () => {

@@ -171,6 +171,13 @@ def _parse_ai_response(content: str, request: GeneratePaletteRequest) -> Generat
             normalized_colors.append(normalized)
     if len(normalized_colors) < 3:
         raise ValueError("AI response did not include enough valid hex colors")
+    if len(normalized_colors) < request.color_count:
+        fallback = _generate_fallback_palette(request)
+        for color in fallback.colors:
+            if color not in normalized_colors:
+                normalized_colors.append(color)
+            if len(normalized_colors) >= request.color_count:
+                break
     name = payload.get("name")
     if not isinstance(name, str) or not name.strip():
         name = _build_palette_name(

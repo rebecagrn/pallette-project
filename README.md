@@ -70,7 +70,9 @@ Open [http://localhost:3000](http://localhost:3000).
 | Env file | Variable | Purpose |
 | --- | --- | --- |
 | `.env.local` | `PALETTE_API_URL` | FastAPI origin used by Next.js route handlers (default `http://localhost:8000`) |
+| `.env.local` | `PALETTE_API_SECRET` | Optional shared secret forwarded to FastAPI |
 | `backend/.env` | `OPENAI_API_KEY` | Enables GPT generation; empty = fallback |
+| `backend/.env` | `API_SECRET` | Optional; when set, generate requires `X-Palette-Api-Secret` |
 | `backend/.env` | `CORS_ORIGINS` | Allowed frontend origins |
 
 ## Scripts
@@ -90,9 +92,9 @@ FastAPI docs: [http://localhost:8000/docs](http://localhost:8000/docs)
 ## How AI generation works
 
 1. The UI posts to `/api/palettes/generate`.
-2. Next.js validates the body (Zod) and forwards it to FastAPI.
+2. Next.js rate-limits by client IP (20/min), validates the body (Zod), and forwards it to FastAPI.
 3. FastAPI calls OpenAI when a key is set, otherwise builds a palette from mood/style heuristics.
-4. Generate is rate-limited (20 requests / minute / IP).
+4. FastAPI also rate-limits generate (20/min) and can require `API_SECRET` so the backend is not a public OpenAI proxy.
 
 Typical payload:
 
@@ -130,9 +132,10 @@ src/
 ## Limitations
 
 - No accounts — everything is local to the browser
-- Blob URLs from file upload do not survive a refresh
+- Uploaded files are stored as data URLs (max 1MB) so they survive refresh
+- Remote image hosts without CORS often block in-browser color extraction — upload the file instead
 - AI needs the FastAPI process running
-- No auth on the generate endpoint (rate limit only)
+- Generate is public besides rate limiting; set `API_SECRET` / `PALETTE_API_SECRET` in production
 - Dark-mode tokens exist in CSS; there is no theme switch yet
 
 ## License

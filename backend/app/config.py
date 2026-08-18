@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     )
 
     openai_api_key: str = ""
+    api_secret: str = ""
     host: str = "0.0.0.0"
     port: int = 8000
     cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"

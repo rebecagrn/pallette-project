@@ -44,14 +44,18 @@ export default function AddImageForm({ onSuccess }: AddImageFormProps) {
     showSuccessToast("Image added successfully")
   }
 
-  const handleFile = (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      showErrorToast("Please upload an image file")
+  const handleFile = async (file: File) => {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      showErrorToast("Please upload a JPEG, PNG, GIF, or WebP image")
+      return
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      showErrorToast("Please upload an image smaller than 1MB so it can be saved")
       return
     }
     setIsUploading(true)
     try {
-      const imageUrl = URL.createObjectURL(file)
+      const imageUrl = await readFileAsDataUrl(file)
       setUrl(imageUrl)
       showSuccessToast("Image ready to add")
     } catch {
@@ -63,14 +67,14 @@ export default function AddImageForm({ onSuccess }: AddImageFormProps) {
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file) handleFile(file)
+    if (file) void handleFile(file)
   }
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault()
     setIsDragging(false)
     const file = e.dataTransfer.files?.[0]
-    if (file) handleFile(file)
+    if (file) void handleFile(file)
   }
 
   const handleAddTag = (e: React.FormEvent) => {
@@ -236,4 +240,27 @@ export default function AddImageForm({ onSuccess }: AddImageFormProps) {
       </Button>
     </form>
   )
+}
+
+const MAX_IMAGE_BYTES = 1 * 1024 * 1024
+const ALLOWED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+]
+
+function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      if (typeof reader.result !== "string") {
+        reject(new Error("Failed to read image"))
+        return
+      }
+      resolve(reader.result)
+    }
+    reader.onerror = () => reject(new Error("Failed to read image"))
+    reader.readAsDataURL(file)
+  })
 }

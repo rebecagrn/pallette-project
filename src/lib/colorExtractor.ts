@@ -16,17 +16,33 @@ export async function extractColors(
           rgbToHex(r, g, b)
         );
         resolve(hexColors);
-      } catch (error) {
-        reject(new Error("Failed to extract colors from image"));
+      } catch {
+        reject(new Error(getExtractionErrorMessage(imageUrl)));
       }
     };
 
     img.onerror = () => {
-      reject(new Error("Failed to load image"));
+      reject(new Error(getLoadErrorMessage(imageUrl)));
     };
 
     img.src = imageUrl;
   });
+}
+
+function isRemoteImageUrl(imageUrl: string): boolean {
+  return imageUrl.startsWith("http://") || imageUrl.startsWith("https://");
+}
+
+function getLoadErrorMessage(imageUrl: string): string {
+  if (isRemoteImageUrl(imageUrl))
+    return "This image host blocks color extraction. Try uploading the file instead.";
+  return "Failed to load image";
+}
+
+function getExtractionErrorMessage(imageUrl: string): string {
+  if (isRemoteImageUrl(imageUrl))
+    return "This image host blocks color extraction. Try uploading the file instead.";
+  return "Failed to extract colors from image";
 }
 
 function rgbToHex(r: number, g: number, b: number): string {

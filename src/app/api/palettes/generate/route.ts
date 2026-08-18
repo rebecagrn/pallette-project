@@ -1,7 +1,19 @@
-import { getPaletteApiUrl } from "@/lib/paletteApiServer"
+import { getPaletteApiHeaders, getPaletteApiUrl } from "@/lib/paletteApiServer"
+import {
+  getClientIp,
+  paletteGenerateLimiter,
+} from "@/lib/rate-limit"
 import { generatePaletteSchema } from "@/validations/palette"
 
 export async function POST(request: Request) {
+  const clientIp = getClientIp(request)
+  if (paletteGenerateLimiter.isLimited(clientIp)) {
+    return Response.json(
+      { detail: "Too many requests. Try again shortly." },
+      { status: 429, headers: { "Retry-After": "60" } }
+    )
+  }
+
   let rawBody: unknown
   try {
     rawBody = await request.json()
@@ -20,7 +32,7 @@ export async function POST(request: Request) {
   try {
     const response = await fetch(getPaletteApiUrl("/api/v1/palettes/generate"), {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: getPaletteApiHeaders(),
       body: JSON.stringify(parsed.data),
       signal: AbortSignal.timeout(30000),
     })

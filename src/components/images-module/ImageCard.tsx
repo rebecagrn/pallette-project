@@ -50,8 +50,12 @@ const ImageCard = memo(function ImageCard({
         isFavorite: false,
       })
       showSuccessToast("Palette created from extracted colors")
-    } catch {
-      showErrorToast("Failed to extract colors from image")
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to extract colors from image"
+      showErrorToast(message)
     } finally {
       setIsExtracting(false)
     }
@@ -92,7 +96,9 @@ const ImageCard = memo(function ImageCard({
       const message =
         error instanceof PaletteApiError
           ? error.message
-          : "Failed to generate AI palette from image"
+          : error instanceof Error
+            ? error.message
+            : "Failed to generate AI palette from image"
       showErrorToast(message)
     } finally {
       setIsEnhancing(false)

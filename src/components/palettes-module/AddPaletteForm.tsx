@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
+import { hexColorSchema } from "@/validations/palette"
 import { showSuccessToast, showErrorToast } from "@/lib/toast"
 
 interface AddPaletteFormProps {
@@ -46,8 +47,12 @@ export default function AddPaletteForm({ onSuccess }: AddPaletteFormProps) {
 
   const handleAddColor = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!newColor.trim()) return
-    setColors([...colors, newColor.toUpperCase()])
+    const parsed = hexColorSchema.safeParse(newColor)
+    if (!parsed.success) {
+      showErrorToast("Enter a valid hex color like #2E8BC0")
+      return
+    }
+    setColors([...colors, parsed.data])
   }
 
   const handleRemoveColor = (index: number) => {
