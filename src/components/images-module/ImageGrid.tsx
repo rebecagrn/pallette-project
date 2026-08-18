@@ -4,8 +4,7 @@ import { useStore } from "@/store/appStore"
 import ImageCard from "./ImageCard"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Filter, ImageIcon } from "lucide-react"
+import { Filter, ImageIcon, ImagePlus } from "lucide-react"
 import SearchBar from "@/components/shared/SearchBar"
 import { EmptyState } from "@/components/shared/EmptyState"
 
@@ -14,6 +13,7 @@ interface ImageGridProps {
   onDelete: (id: string) => void
   onEdit: (id: string, data: Partial<ImageProps>) => void
   viewMode?: "grid" | "list"
+  onAddClick?: () => void
 }
 
 export default function ImageGrid({
@@ -21,6 +21,7 @@ export default function ImageGrid({
   onDelete,
   onEdit,
   viewMode = "grid",
+  onAddClick,
 }: ImageGridProps) {
   const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([])
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([])
@@ -32,11 +33,9 @@ export default function ImageGrid({
       const matchesGroups =
         selectedGroupIds.length === 0 ||
         selectedGroupIds.some((groupId) => image.groupIds.includes(groupId))
-
       const matchesTags =
         selectedTagIds.length === 0 ||
         selectedTagIds.some((tagId) => image.tagIds.includes(tagId))
-
       const matchesSearch =
         searchQuery === "" ||
         image.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -47,7 +46,6 @@ export default function ImageGrid({
           const tag = tags.find((t) => t.id === tagId)
           return tag?.name.toLowerCase().includes(searchQuery.toLowerCase())
         })
-
       return matchesGroups && matchesTags && matchesSearch
     })
   }, [images, selectedGroupIds, selectedTagIds, searchQuery, tags])
@@ -79,103 +77,95 @@ export default function ImageGrid({
     selectedTagIds.length > 0 ||
     searchQuery.length > 0
 
+  const showFilters = groups.length > 0 || tags.length > 0 || images.length > 0
+
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <Card className="surface-card p-4 sm:p-5">
-        <div className="space-y-4">
+    <div className="space-y-4">
+      {showFilters && (
+        <div className="surface-card p-3 sm:p-4 space-y-3">
           <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-primary" />
-              <span className="font-semibold text-sm sm:text-base">Filters</span>
-            </div>
+            <SearchBar
+              onSearch={setSearchQuery}
+              placeholder="Search images, comments, or tags..."
+            />
             {hasActiveFilters && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={clearFilters}
-                className="text-muted-foreground hover:text-foreground h-8"
+                className="shrink-0 text-muted-foreground"
               >
-                Clear all
+                Clear
               </Button>
             )}
           </div>
 
-          <SearchBar
-            onSearch={setSearchQuery}
-            placeholder="Search by name, comment, or tag..."
-          />
-
-          {groups.length > 0 && (
-            <div className="space-y-2">
-              <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                Groups
-              </span>
-              <div className="flex flex-wrap gap-2">
-                {groups.map((group) => (
-                  <Badge
-                    key={group.id}
-                    variant={
-                      selectedGroupIds.includes(group.id)
-                        ? "default"
-                        : "outline"
-                    }
-                    className="cursor-pointer select-none py-1.5 px-3"
-                    onClick={() => handleToggleGroup(group.id)}
-                  >
-                    {group.name}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {tags.length > 0 && (
-            <div className="space-y-2">
-              <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                Tags
-              </span>
-              <div className="flex flex-wrap gap-2">
-                {tags.map((tag) => (
-                  <Badge
-                    key={tag.id}
-                    variant={
-                      selectedTagIds.includes(tag.id) ? "default" : "outline"
-                    }
-                    className="cursor-pointer select-none py-1.5 px-3"
-                    onClick={() => handleToggleTag(tag.id)}
-                  >
-                    {tag.name}
-                  </Badge>
-                ))}
-              </div>
+          {(groups.length > 0 || tags.length > 0) && (
+            <div className="flex flex-wrap items-center gap-2">
+              {groups.map((group) => (
+                <Badge
+                  key={group.id}
+                  variant={
+                    selectedGroupIds.includes(group.id) ? "default" : "outline"
+                  }
+                  className="cursor-pointer select-none py-1 px-2.5"
+                  onClick={() => handleToggleGroup(group.id)}
+                >
+                  {group.name}
+                </Badge>
+              ))}
+              {tags.map((tag) => (
+                <Badge
+                  key={tag.id}
+                  variant={
+                    selectedTagIds.includes(tag.id) ? "default" : "outline"
+                  }
+                  className="cursor-pointer select-none py-1 px-2.5"
+                  onClick={() => handleToggleTag(tag.id)}
+                >
+                  {tag.name}
+                </Badge>
+              ))}
             </div>
           )}
         </div>
-      </Card>
+      )}
 
       {images.length === 0 ? (
-        <EmptyState
-          icon={ImageIcon}
-          title="No images yet"
-          description="Upload your first image to start extracting and generating color palettes."
-        />
+        <div className="surface-card">
+          <EmptyState
+            icon={ImageIcon}
+            title="No images yet"
+            description="Add a photo to extract colors or generate an AI palette."
+            action={
+              onAddClick ? (
+                <Button onClick={onAddClick}>
+                  <ImagePlus className="h-4 w-4" />
+                  Add your first image
+                </Button>
+              ) : undefined
+            }
+          />
+        </div>
       ) : filteredImages.length === 0 ? (
-        <EmptyState
-          icon={Filter}
-          title="No matches found"
-          description="Try adjusting your filters or search query."
-          action={
-            <Button variant="outline" onClick={clearFilters}>
-              Clear filters
-            </Button>
-          }
-        />
+        <div className="surface-card">
+          <EmptyState
+            icon={Filter}
+            title="No matches found"
+            description="Try another search or clear your filters."
+            action={
+              <Button variant="outline" onClick={clearFilters}>
+                Clear filters
+              </Button>
+            }
+          />
+        </div>
       ) : (
         <div
           className={
             viewMode === "list"
-              ? "flex flex-col gap-4"
-              : "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6"
+              ? "flex flex-col gap-3"
+              : "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4"
           }
         >
           {filteredImages.map((image) => (
@@ -184,6 +174,7 @@ export default function ImageGrid({
               image={image}
               onDelete={onDelete}
               onEdit={onEdit}
+              viewMode={viewMode}
             />
           ))}
         </div>

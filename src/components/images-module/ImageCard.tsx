@@ -15,12 +15,14 @@ interface ImageCardProps {
   image: ImageProps
   onDelete: (id: string) => void
   onEdit: (id: string, data: Partial<ImageProps>) => void
+  viewMode?: "grid" | "list"
 }
 
 const ImageCard = memo(function ImageCard({
   image,
   onDelete,
   onEdit,
+  viewMode = "grid",
 }: ImageCardProps) {
   const [isExtracting, setIsExtracting] = useState(false)
   const [isEnhancing, setIsEnhancing] = useState(false)
@@ -97,14 +99,28 @@ const ImageCard = memo(function ImageCard({
     }
   }
 
+  const isList = viewMode === "list"
+
   return (
-    <Card className="surface-card overflow-hidden transition-shadow hover:shadow-md">
-      <CardContent className="p-0">
-        <div className="relative aspect-square overflow-hidden bg-muted">
+    <Card
+      className={cn(
+        "surface-card overflow-hidden transition-shadow hover:shadow-md",
+        isList && "sm:flex"
+      )}
+    >
+      <CardContent className={cn("p-0", isList && "sm:flex sm:flex-1 sm:min-w-0")}>
+        <div
+          className={cn(
+            "relative overflow-hidden bg-muted",
+            isList
+              ? "aspect-[16/10] sm:aspect-auto sm:w-52 sm:min-h-[148px] sm:self-stretch sm:shrink-0"
+              : "aspect-square"
+          )}
+        >
           <img
             src={image.url}
             alt="Uploaded image"
-            className="object-cover w-full h-full"
+            className="object-cover w-full h-full sm:h-full"
             loading="lazy"
           />
           <div className="absolute top-2 right-2 flex gap-1">
@@ -136,7 +152,7 @@ const ImageCard = memo(function ImageCard({
           </div>
         </div>
 
-        <div className="p-4 space-y-4">
+        <div className={cn("p-4 space-y-3", isList && "sm:flex-1 sm:flex sm:flex-col sm:justify-center")}>
           <div className="grid grid-cols-2 gap-2">
             <Button
               variant="outline"

@@ -8,7 +8,7 @@ export default function GeneratorPage() {
     <div className="page-shell">
       <PageHeader
         title="Generator"
-        description="Upload images, extract colors, and create AI-enhanced palettes from your visual inspiration."
+        description="Upload a photo, extract its colors, or let AI turn it into a palette."
       />
       <ImagesModule />
     </div>
