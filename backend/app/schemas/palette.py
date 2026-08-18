@@ -1,7 +1,10 @@
+import re
 from enum import Enum
 from typing import List, Optional
 
 from pydantic import BaseModel, Field, field_validator
+
+HEX_PATTERN = re.compile(r"^#[0-9A-Fa-f]{6}$")
 
 
 class PaletteMood(str, Enum):
@@ -34,7 +37,7 @@ class GeneratePaletteRequest(BaseModel):
     mood: Optional[PaletteMood] = None
     style: Optional[PaletteStyle] = None
     color_count: int = Field(default=5, ge=3, le=10)
-    base_colors: List[str] = Field(default_factory=list, max_length=5)
+    base_colors: List[str] = Field(default_factory=list, max_length=10)
 
     @field_validator("base_colors")
     @classmethod
@@ -44,7 +47,7 @@ class GeneratePaletteRequest(BaseModel):
             normalized = color.strip().upper()
             if not normalized.startswith("#"):
                 normalized = f"#{normalized}"
-            if len(normalized) != 7:
+            if not HEX_PATTERN.match(normalized):
                 raise ValueError(f"Invalid hex color: {color}")
             validated.append(normalized)
         return validated

@@ -1,19 +1,20 @@
 import json
+import logging
 import random
-import re
 from typing import Any, Dict, List, Tuple
 
-from openai import OpenAI
+from openai import AsyncOpenAI
 
 from app.config import settings
 from app.schemas.palette import (
+    HEX_PATTERN,
     GeneratePaletteRequest,
     GeneratedPalette,
     PaletteMood,
     PaletteStyle,
 )
 
-HEX_PATTERN = re.compile(r"^#[0-9A-Fa-f]{6}$")
+logger = logging.getLogger(__name__)
 
 MOOD_HUES: Dict[PaletteMood, Tuple[float, float]] = {
     PaletteMood.WARM: (10, 50),
@@ -75,11 +76,11 @@ def _generate_fallback_palette(request: GeneratePaletteRequest) -> GeneratedPale
     if request.base_colors:
         colors.extend(request.base_colors[: request.color_count])
     seed = sum(ord(char) for char in request.prompt.lower())
-    random.seed(seed)
+    rng = random.Random(seed)
     while len(colors) < request.color_count:
-        hue = random.uniform(hue_range[0], hue_range[1])
-        saturation = random.uniform(sat_range[0], sat_range[1]) / 100
-        lightness = random.uniform(lightness_range[0], lightness_range[1]) / 100
+        hue = rng.uniform(hue_range[0], hue_range[1])
+        saturation = rng.uniform(sat_range[0], sat_range[1]) / 100
+        lightness = rng.uniform(lightness_range[0], lightness_range[1]) / 100
         hex_color = _rgb_to_hex(*_hue_to_rgb(hue, saturation, lightness))
         if hex_color not in colors:
             colors.append(hex_color)
@@ -193,7 +194,7 @@ def _parse_ai_response(content: str, request: GeneratePaletteRequest) -> Generat
 async def generate_palette_with_ai(request: GeneratePaletteRequest) -> GeneratedPalette:
     if not settings.has_openai:
         return _generate_fallback_palette(request)
-    client = OpenAI(api_key=settings.openai_api_key)
+    client = AsyncOpenAI(api_key=settings.openai_api_key)
     mood_hint = request.mood.value if request.mood else "infer from prompt"
     style_hint = request.style.value if request.style else "infer from prompt"
     base_colors_hint = ", ".join(request.base_colors) if request.base_colors else "none"
@@ -210,7 +211,7 @@ async def generate_palette_with_ai(request: GeneratePaletteRequest) -> Generated
         f"Return exactly {request.color_count} harmonious hex colors."
     )
     try:
-        response = client.chat.completions.create(
+        response = await client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": system_prompt},
@@ -224,4 +225,5 @@ async def generate_palette_with_ai(request: GeneratePaletteRequest) -> Generated
             raise ValueError("Empty AI response")
         return _parse_ai_response(content, request)
     except Exception:
+        logger.exception("OpenAI palette generation failed; using fallback")
         return _generate_fallback_palette(request)

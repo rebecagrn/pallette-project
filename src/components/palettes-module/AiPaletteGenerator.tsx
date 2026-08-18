@@ -80,8 +80,17 @@ export function AiPaletteGenerator({ onSaved }: AiPaletteGeneratorProps) {
   }, [])
 
   const handleGenerate = async () => {
-    if (!prompt.trim()) {
-      showErrorToast("Please describe the palette you want")
+    if (prompt.trim().length < 3) {
+      showErrorToast("Please describe the palette in at least 3 characters")
+      return
+    }
+    const parsedColorCount = Number(colorCount)
+    if (
+      !Number.isInteger(parsedColorCount) ||
+      parsedColorCount < 3 ||
+      parsedColorCount > 10
+    ) {
+      showErrorToast("Choose between 3 and 10 colors")
       return
     }
     setIsGenerating(true)
@@ -91,7 +100,7 @@ export function AiPaletteGenerator({ onSaved }: AiPaletteGeneratorProps) {
         prompt: prompt.trim(),
         mood: mood || undefined,
         style: style || undefined,
-        color_count: Number(colorCount),
+        color_count: parsedColorCount,
       })
       setGeneratedPalette(response.palette)
       showSuccessToast(
@@ -188,13 +197,16 @@ export function AiPaletteGenerator({ onSaved }: AiPaletteGeneratorProps) {
             <div className="space-y-2">
               <Label>Mood</Label>
               <Select
-                value={mood}
-                onValueChange={(value) => setMood(value as PaletteMood)}
+                value={mood || "auto"}
+                onValueChange={(value) =>
+                  setMood(value === "auto" ? "" : (value as PaletteMood))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Auto-detect" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="auto">Auto-detect</SelectItem>
                   {MOOD_OPTIONS.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
@@ -207,13 +219,16 @@ export function AiPaletteGenerator({ onSaved }: AiPaletteGeneratorProps) {
             <div className="space-y-2">
               <Label>Style</Label>
               <Select
-                value={style}
-                onValueChange={(value) => setStyle(value as PaletteStyle)}
+                value={style || "auto"}
+                onValueChange={(value) =>
+                  setStyle(value === "auto" ? "" : (value as PaletteStyle))
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Auto-detect" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="auto">Auto-detect</SelectItem>
                   {STYLE_OPTIONS.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
@@ -274,9 +289,9 @@ export function AiPaletteGenerator({ onSaved }: AiPaletteGeneratorProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex h-24 rounded-lg overflow-hidden border">
-              {generatedPalette.colors.map((color) => (
+              {generatedPalette.colors.map((color, index) => (
                 <div
-                  key={color}
+                  key={`${color}-${index}`}
                   className="flex-1 flex flex-col justify-end p-2 min-w-0"
                   style={{ backgroundColor: color }}
                   title={color}

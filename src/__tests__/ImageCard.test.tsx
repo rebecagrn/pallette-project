@@ -3,11 +3,19 @@ import "@testing-library/jest-dom";
 import ImageCard from "../components/images-module/ImageCard";
 import { ImageProps } from "@/types";
 
-// Mock the toast function
+jest.mock("@/lib/paletteApi", () => ({
+  generatePaletteWithAi: jest.fn(),
+  PaletteApiError: class PaletteApiError extends Error {},
+}))
+
+jest.mock("@/lib/colorExtractor", () => ({
+  extractColors: jest.fn(),
+}))
+
 jest.mock("@/lib/toast", () => ({
   showSuccessToast: jest.fn(),
   showErrorToast: jest.fn(),
-}));
+}))
 
 describe("ImageCard", () => {
   const mockImage: ImageProps = {
@@ -49,8 +57,7 @@ describe("ImageCard", () => {
     const favoriteButton = screen.getByLabelText("Toggle favorite");
     fireEvent.click(favoriteButton);
 
-    expect(mockHandlers.onEdit).toHaveBeenCalledWith({
-      ...mockImage,
+    expect(mockHandlers.onEdit).toHaveBeenCalledWith(mockImage.id, {
       isFavorite: true,
     });
   });

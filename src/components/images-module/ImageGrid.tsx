@@ -13,12 +13,14 @@ interface ImageGridProps {
   images: ImageProps[]
   onDelete: (id: string) => void
   onEdit: (id: string, data: Partial<ImageProps>) => void
+  viewMode?: "grid" | "list"
 }
 
 export default function ImageGrid({
   images,
   onDelete,
   onEdit,
+  viewMode = "grid",
 }: ImageGridProps) {
   const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([])
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([])
@@ -169,7 +171,13 @@ export default function ImageGrid({
           }
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+        <div
+          className={
+            viewMode === "list"
+              ? "flex flex-col gap-4"
+              : "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6"
+          }
+        >
           {filteredImages.map((image) => (
             <ImageCard
               key={image.id}

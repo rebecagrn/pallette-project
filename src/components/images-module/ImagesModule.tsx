@@ -61,6 +61,7 @@ export default function ImagesModule() {
             images={sortedImages}
             onDelete={handleDelete}
             onEdit={handleEdit}
+            viewMode={viewMode}
           />
         </div>
 

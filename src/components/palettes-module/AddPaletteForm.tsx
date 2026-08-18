@@ -79,10 +79,9 @@ export default function AddPaletteForm({ onSuccess }: AddPaletteFormProps) {
         showErrorToast("This tag is already added to the palette");
       }
     } else {
-      const newTagId = crypto.randomUUID();
-      addTag(newTagName);
-      setSelectedTagIds([...selectedTagIds, newTagId]);
-      setTagInput("");
+      const newTagId = addTag(newTagName)
+      setSelectedTagIds([...selectedTagIds, newTagId])
+      setTagInput("")
     }
   };
 

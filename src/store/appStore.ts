@@ -38,7 +38,7 @@ interface AppState {
   updateGroup: (id: string, data: Partial<GroupProps>) => void;
 
   // Tags actions
-  addTag: (name: string) => void;
+  addTag: (name: string) => string;
   removeTag: (id: string) => void;
   updateTag: (id: string, name: string) => void;
 
@@ -125,13 +125,13 @@ export const useStore = create<AppState>()(
           ),
         })),
 
-      addTag: (name: string) =>
-        set((state) => {
-          const newTag = { id: nanoid(), name };
-          return {
-            tags: [...state.tags, newTag],
-          };
-        }),
+      addTag: (name: string) => {
+        const id = nanoid()
+        set((state) => ({
+          tags: [...state.tags, { id, name }],
+        }))
+        return id
+      },
 
       removeTag: (id: string) =>
         set((state) => ({

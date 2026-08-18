@@ -73,6 +73,40 @@ def test_generate_palette_invalid_prompt():
     assert response.status_code == 422
 
 
+def test_generate_palette_with_six_base_colors():
+    response = client.post(
+        "/api/v1/palettes/generate",
+        json={
+            "prompt": "expand this palette harmoniously",
+            "base_colors": [
+                "#FF5733",
+                "#C70039",
+                "#900C3F",
+                "#581845",
+                "#1A5276",
+                "#117A65",
+            ],
+            "color_count": 6,
+        },
+    )
+    assert response.status_code == 200
+    colors = response.json()["palette"]["colors"]
+    assert "#FF5733" in colors
+    assert len(colors) == 6
+
+
+def test_generate_palette_rejects_invalid_hex():
+    response = client.post(
+        "/api/v1/palettes/generate",
+        json={
+            "prompt": "valid prompt here",
+            "base_colors": ["#GGGGGG"],
+            "color_count": 5,
+        },
+    )
+    assert response.status_code == 422
+
+
 def test_generate_palette_invalid_color_count():
     response = client.post(
         "/api/v1/palettes/generate",

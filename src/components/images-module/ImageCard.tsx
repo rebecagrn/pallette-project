@@ -3,7 +3,6 @@ import { useState, memo } from "react"
 import { useStore } from "@/store/appStore"
 import { Button } from "../ui/button"
 import { Trash2, Heart, Palette, Sparkles, Loader2 } from "lucide-react"
-import { Textarea } from "../ui/textarea"
 import { Badge } from "../ui/badge"
 import { Card, CardContent } from "../ui/card"
 import CommentSection from "../shared/CommentSection"
@@ -23,28 +22,11 @@ const ImageCard = memo(function ImageCard({
   onDelete,
   onEdit,
 }: ImageCardProps) {
-  const [isEditing] = useState(false)
   const [isExtracting, setIsExtracting] = useState(false)
   const [isEnhancing, setIsEnhancing] = useState(false)
-  const [comment, setComment] = useState("")
   const { tags, groups, addPalette } = useStore()
 
   const isBusy = isExtracting || isEnhancing
-
-  const handleAddComment = () => {
-    if (!comment.trim()) return
-    const newComment: CommentProps = {
-      id: crypto.randomUUID(),
-      imageId: image.id,
-      text: comment,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }
-    onEdit(image.id, {
-      comments: [...image.comments, newComment],
-    })
-    setComment("")
-  }
 
   const handleUpdateComments = (comments: CommentProps[]) => {
     onEdit(image.id, { comments })
@@ -76,11 +58,11 @@ const ImageCard = memo(function ImageCard({
   const handleAiEnhance = async () => {
     setIsEnhancing(true)
     try {
-      const baseColors = await extractColors(image.url)
+      const baseColors = await extractColors(image.url, 5)
       const imageLabel = image.url.split("/").pop() || "image"
       const response = await generatePaletteWithAi({
         prompt: `Harmonious color palette inspired by this image (${imageLabel})`,
-        base_colors: baseColors,
+        base_colors: baseColors.slice(0, 5),
         color_count: 5,
       })
       addPalette({
@@ -211,20 +193,6 @@ const ImageCard = memo(function ImageCard({
             comments={image.comments}
             onUpdate={handleUpdateComments}
           />
-
-          {isEditing && (
-            <div className="space-y-2">
-              <Textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Add a comment..."
-                className="min-h-[80px]"
-              />
-              <Button onClick={handleAddComment} className="w-full">
-                Add Comment
-              </Button>
-            </div>
-          )}
         </div>
       </CardContent>
     </Card>

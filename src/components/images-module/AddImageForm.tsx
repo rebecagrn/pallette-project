@@ -83,9 +83,8 @@ export default function AddImageForm({ onSuccess }: AddImageFormProps) {
         setSelectedTags([...selectedTags, existingTag.id]);
       }
     } else {
-      const newTagId = crypto.randomUUID();
-      addTag(newTagName);
-      setSelectedTags([...selectedTags, newTagId]);
+      const newTagId = addTag(newTagName)
+      setSelectedTags([...selectedTags, newTagId])
     }
     setTagInput("");
   };

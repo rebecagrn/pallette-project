@@ -1,4 +1,4 @@
-import { ColorPaletteProps, CommentProps } from "@/types"
+import { ColorPaletteProps } from "@/types"
 import { useStore } from "@/store/appStore"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
@@ -41,27 +41,17 @@ export default function PaletteCard({
 
   return (
     <Card className="surface-card overflow-hidden transition-shadow hover:shadow-md group">
-      <div
-        className="flex h-20 sm:h-24 cursor-pointer"
-        onClick={handleCopyAll}
-        role="button"
-        tabIndex={0}
-        aria-label={`Copy all colors from ${palette.name}`}
-        onKeyDown={(e) => e.key === "Enter" && handleCopyAll()}
-      >
-        {palette.colors.map((color) => (
+      <div className="flex h-20 sm:h-24">
+        {palette.colors.map((color, index) => (
           <button
-            key={color}
+            key={`${color}-${index}`}
             type="button"
             className="flex-1 relative min-w-0 transition-transform hover:scale-y-105 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
             style={{ backgroundColor: color }}
-            onClick={(e) => {
-              e.stopPropagation()
-              handleCopyColor(color)
-            }}
+            onClick={() => handleCopyColor(color)}
             aria-label={`Copy color ${color}`}
           >
-            <span className="absolute bottom-1 left-1 right-1 text-[9px] sm:text-[10px] font-mono text-white bg-black/40 rounded px-1 py-0.5 opacity-0 group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity truncate">
+            <span className="absolute bottom-1 left-1 right-1 text-[9px] sm:text-[10px] font-mono text-white bg-black/40 rounded px-1 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity truncate">
               {color}
             </span>
           </button>
