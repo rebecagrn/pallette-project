@@ -3,6 +3,7 @@
 import { useStore } from "@/store/appStore";
 import PaletteGrid from "@/components/palettes-module/PaletteGrid";
 import AddPaletteForm from "@/components/palettes-module/AddPaletteForm";
+import { AiPaletteGenerator } from "@/components/palettes-module/AiPaletteGenerator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -45,6 +46,7 @@ export default function PalettesPage() {
           <TabsTrigger value="all">All Palettes</TabsTrigger>
           <TabsTrigger value="favorites">Favorites</TabsTrigger>
           <TabsTrigger value="recent">Recent</TabsTrigger>
+          <TabsTrigger value="ai">AI Generator</TabsTrigger>
         </TabsList>
 
         <TabsContent value="all" className="space-y-4">
@@ -114,6 +116,10 @@ export default function PalettesPage() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="ai">
+          <AiPaletteGenerator />
         </TabsContent>
       </Tabs>
     </div>

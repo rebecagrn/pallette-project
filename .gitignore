@@ -9,6 +9,14 @@ yarn.lock
 
 # Environment variables
 .env*.local
+.env
+
+# Python backend
+backend/.venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/.env
+*.pyc
 
 # Build files
 /build

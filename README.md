@@ -52,6 +52,7 @@ https://github.com/user-attachments/assets/cefee8e4-f8ac-485d-8c92-22b6ffecfa36
 - Export palettes in JSON format
 - Import palettes from JSON files
 - Color extraction from images
+- AI-powered palette generation (FastAPI backend)
 - Responsive design
 - Dark mode support
 - Offline support via localStorage
@@ -62,6 +63,7 @@ https://github.com/user-attachments/assets/cefee8e4-f8ac-485d-8c92-22b6ffecfa36
 
 - Node.js 18.x or later
 - pnpm (recommended) or npm
+- Python 3.9+ (for the backend API)
 
 ### Installation
 
@@ -72,23 +74,44 @@ git clone https://github.com/yourusername/pallette.git
 cd pallette
 ```
 
-2. Install dependencies:
+2. Install frontend dependencies:
 
 ```bash
 pnpm install
 ```
 
-3. Run the development server:
+3. Configure environment:
+
+```bash
+cp .env.example .env.local
+```
+
+4. Start the FastAPI backend (optional but required for AI generation):
+
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+# Optional: add OPENAI_API_KEY to backend/.env for GPT-powered palettes
+uvicorn app.main:app --reload --port 8000
+```
+
+5. Run the development server:
 
 ```bash
 pnpm dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+6. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+Go to **Palettes → AI Generator** to create palettes from text prompts.
 
 ## Project Structure
 
 ```
+backend/                  # FastAPI AI palette API
 src/
 ├── app/                    # Next.js app router
 ├── components/            # React components
@@ -106,6 +129,7 @@ src/
 ## Technical Stack
 
 - **Framework**: Next.js 14
+- **Backend**: FastAPI (Python)
 - **Language**: TypeScript
 - **State Management**: Zustand
 - **Styling**: Tailwind CSS
@@ -131,7 +155,7 @@ pnpm lint
 
 - Data is stored locally in the browser
 - Limited image processing capabilities
-- No backend integration yet
+- Backend required for AI palette generation
 - No user authentication
 - No collaborative features
 
@@ -139,12 +163,9 @@ pnpm lint
 
 ### Planned Features
 
-- Backend integration
 - User authentication
 - Collaborative features
 - Advanced color editor
-- AI-powered suggestions
-- Advanced analytics
 - Social sharing
 - Mobile app version
 
