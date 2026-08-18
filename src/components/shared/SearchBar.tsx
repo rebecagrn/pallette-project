@@ -31,7 +31,7 @@ export default function SearchBar({
       <Input
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="pl-9 bg-background/60 backdrop-blur-sm"
+        className="pl-9"
         placeholder={placeholder}
       />
     </div>

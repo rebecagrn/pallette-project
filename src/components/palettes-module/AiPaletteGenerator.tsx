@@ -145,7 +145,7 @@ export function AiPaletteGenerator({ onSaved }: AiPaletteGeneratorProps) {
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="surface-card">
         <CardHeader>
           <div className="flex items-center justify-between gap-4">
             <CardTitle className="flex items-center gap-2">
@@ -177,7 +177,7 @@ export function AiPaletteGenerator({ onSaved }: AiPaletteGeneratorProps) {
                 key={suggestion}
                 type="button"
                 onClick={() => handleUseSuggestion(suggestion)}
-                className="text-xs px-2 py-1 rounded-full bg-secondary hover:bg-secondary/80 transition-colors"
+                className="text-xs px-3 py-1.5 rounded-full border bg-background hover:bg-muted transition-colors text-left"
               >
                 {suggestion}
               </button>
@@ -240,7 +240,7 @@ export function AiPaletteGenerator({ onSaved }: AiPaletteGeneratorProps) {
             type="button"
             onClick={handleGenerate}
             disabled={isGenerating}
-            className="w-full bg-black hover:bg-slate-950"
+            className="w-full"
           >
             {isGenerating ? (
               <>
@@ -258,7 +258,7 @@ export function AiPaletteGenerator({ onSaved }: AiPaletteGeneratorProps) {
       </Card>
 
       {generatedPalette && (
-        <Card>
+        <Card className="surface-card">
           <CardHeader>
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -293,7 +293,7 @@ export function AiPaletteGenerator({ onSaved }: AiPaletteGeneratorProps) {
                 type="button"
                 onClick={handleSavePalette}
                 disabled={isSaving}
-                className="flex-1 bg-black hover:bg-slate-950"
+                className="flex-1"
               >
                 {isSaving ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

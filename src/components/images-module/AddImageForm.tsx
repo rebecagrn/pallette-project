@@ -206,7 +206,7 @@ export default function AddImageForm({ onSuccess }: AddImageFormProps) {
 
           <Button
             type="submit"
-            className="w-full bg-black hover:bg-slate-950 text-white"
+            className="w-full"
             disabled={isUploading || !url.trim()}
           >
             {isUploading ? "Uploading..." : "Add Image"}

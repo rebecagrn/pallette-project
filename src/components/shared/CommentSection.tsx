@@ -95,7 +95,6 @@ export default function CommentSection({
                       <Button
                         size="sm"
                         onClick={() => handleUpdateComment(comment.id)}
-                        className="bg-black hover:bg-slate-950"
                       >
                         <Check className="h-4 w-4 mr-1" />
                         Save
@@ -156,7 +155,7 @@ export default function CommentSection({
           <div className="flex gap-2">
             <Button
               onClick={handleAddComment}
-              className="flex-1 bg-black hover:bg-slate-950"
+              className="flex-1"
             >
               Add Comment
             </Button>

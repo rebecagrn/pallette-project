@@ -45,9 +45,9 @@ export default function ImagesModule() {
   };
 
   return (
-    <div className="mx-auto py-8 space-y-8">
-      <div className="grid gap-6 md:grid-cols-[2fr,1fr]">
-        <div className="space-y-6">
+    <div className="space-y-6">
+      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+        <div className="space-y-6 min-w-0">
           <ImagesHeader
             totalImages={images.length}
             onAddClick={() => setShowAddImageDialog(true)}
@@ -64,7 +64,7 @@ export default function ImagesModule() {
           />
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-6 lg:sticky lg:top-20 lg:self-start">
           <GroupManager />
         </div>
       </div>

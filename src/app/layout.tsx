@@ -1,6 +1,7 @@
 import { Inter, Leckerli_One } from "next/font/google";
 import "./globals.css";
 import { Navigation } from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 import { Toaster } from "sonner";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
@@ -55,7 +56,7 @@ export default function RootLayout({
       <head />
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased",
+          "min-h-screen bg-background font-sans antialiased gradient-mesh",
           inter.className,
           leckerliOne.variable
         )}
@@ -63,6 +64,7 @@ export default function RootLayout({
         <div className="relative flex min-h-screen flex-col">
           <Navigation />
           <main className="flex-1">{children}</main>
+          <Footer />
         </div>
         <Toaster richColors position="top-center" />
       </body>

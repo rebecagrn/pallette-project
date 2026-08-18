@@ -35,12 +35,9 @@ export default function GroupManager() {
   };
 
   return (
-    <Card className="relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-gradient-to-bl from-purple-500/20 to-transparent rounded-full transform translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-gradient-to-tr from-blue-500/20 to-transparent rounded-full transform -translate-x-1/2 translate-y-1/2" />
-
+    <Card className="surface-card">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold">Manage Groups</CardTitle>
+        <CardTitle className="text-lg font-semibold">Manage Groups</CardTitle>
       </CardHeader>
 
       <CardContent>
@@ -52,11 +49,11 @@ export default function GroupManager() {
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
               placeholder="Enter group name"
-              className="bg-background/60 backdrop-blur-sm"
+              className="bg-background"
             />
           </div>
 
-          <Button type="submit" className="w-full bg-black hover:bg-slate-950">
+          <Button type="submit" className="w-full">
             Add Group
           </Button>
         </form>
@@ -67,7 +64,7 @@ export default function GroupManager() {
             {groups.map((group) => (
               <div
                 key={group.id}
-                className="flex items-center justify-between p-2 rounded-lg bg-background/60 backdrop-blur-sm"
+                className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
               >
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium">

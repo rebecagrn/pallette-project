@@ -115,7 +115,6 @@ export default function AddPaletteForm({ onSuccess }: AddPaletteFormProps) {
           <Button
             type="button"
             onClick={handleAddColor}
-            className="bg-black hover:bg-slate-950"
           >
             Add Color
           </Button>
@@ -159,7 +158,6 @@ export default function AddPaletteForm({ onSuccess }: AddPaletteFormProps) {
           <Button
             type="button"
             onClick={handleAddTag}
-            className="bg-black hover:bg-slate-950"
           >
             Add
           </Button>
@@ -203,7 +201,7 @@ export default function AddPaletteForm({ onSuccess }: AddPaletteFormProps) {
         </div>
       </div>
 
-      <Button type="submit" className="w-full bg-black hover:bg-slate-950">
+      <Button type="submit" className="w-full">
         Create Palette
       </Button>
     </form>

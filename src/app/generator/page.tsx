@@ -1,18 +1,16 @@
-"use client";
+"use client"
 
-import ImagesModule from "@/components/images-module/ImagesModule";
+import ImagesModule from "@/components/images-module/ImagesModule"
+import { PageHeader } from "@/components/shared/PageHeader"
 
 export default function GeneratorPage() {
   return (
-    <div className="container mx-auto py-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight">Generator</h1>
-        <p className="text-base text-muted-foreground mt-2">
-          Generate color palettes from images and manage your visual
-          inspiration.
-        </p>
-      </div>
+    <div className="page-shell">
+      <PageHeader
+        title="Generator"
+        description="Upload images, extract colors, and create AI-enhanced palettes from your visual inspiration."
+      />
       <ImagesModule />
     </div>
-  );
+  )
 }

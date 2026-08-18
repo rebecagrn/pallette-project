@@ -1,12 +1,16 @@
-"use client";
+"use client"
 
-import StatsDashboard from "@/components/dashboard-module/StatsDashboard";
+import StatsDashboard from "@/components/dashboard-module/StatsDashboard"
+import { PageHeader } from "@/components/shared/PageHeader"
 
 export default function DashboardPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
+    <div className="page-shell">
+      <PageHeader
+        title="Dashboard"
+        description="Overview of your images, palettes, tags, and groups."
+      />
       <StatsDashboard />
     </div>
-  );
+  )
 }
