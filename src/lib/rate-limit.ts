@@ -18,11 +18,11 @@ export function createRateLimiter({
   function prune(now: number): void {
     if (hits.size <= MAX_TRACKED_KEYS) return
     const windowStart = now - windowMs
-    for (const [key, timestamps] of hits) {
+    Array.from(hits.entries()).forEach(([key, timestamps]) => {
       const recent = timestamps.filter((timestamp) => timestamp > windowStart)
       if (recent.length === 0) hits.delete(key)
       else hits.set(key, recent)
-    }
+    })
   }
 
   function isLimited(key: string): boolean {
