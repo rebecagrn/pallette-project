@@ -1,210 +1,140 @@
-# BrandZone - Color Palette Generator
+# BrandZone
 
-A modern web application for generating and managing color palettes from images. Built with Next.js, TypeScript, and Tailwind CSS.
+Extract palettes from photos, build them by hand, or generate them from a text prompt. BrandZone is a Next.js app with an optional FastAPI service for AI suggestions.
 
-## Live Demo
-
-Visit the live application at: [brandzone-project.vercel.app](https://brandzone-project.vercel.app)
-
-## Project Demo
+**Live demo:** [brandzone-project.vercel.app](https://brandzone-project.vercel.app)
 
 https://github.com/user-attachments/assets/cefee8e4-f8ac-485d-8c92-22b6ffecfa36
 
-## Features
+## What you can do
 
-### Image Management
+| Area | Capabilities |
+| --- | --- |
+| **Generator** | Add images by URL or file, extract colors with ColorThief, enhance with AI, group and tag |
+| **Palettes** | Create by hand, search by name/hex/tag, favorite, export/import JSON, generate from a prompt |
+| **Dashboard** | Library snapshot, recent items, tag and group usage |
 
-- Upload images via URL or file
-- Organize images in custom groups
-- Add tags to images
-- Add and edit comments
-- Delete images
-- Favorite images for quick access
+Data lives in the browser (`localStorage` via Zustand). AI generation calls the Python API through Next.js `/api/palettes/*` so the backend URL stays server-side.
 
-### Palette Management
+Without `OPENAI_API_KEY`, the API still returns palettes using a color-theory fallback.
 
-- Generate color palettes from images
-- Create custom color palettes
-- Organize palettes in custom groups
-- Add tags to palettes
-- Add and edit comments
-- Delete palettes
-- Favorite palettes for quick access
+## Stack
 
-### Organization
+- **Frontend:** Next.js 14, React 18, TypeScript, Tailwind CSS, shadcn/ui, Zustand
+- **Color extraction:** ColorThief
+- **Backend:** FastAPI, Pydantic, optional OpenAI (`gpt-4o-mini`)
 
-- Create and manage custom groups
-- Create and manage tags
-- Filter content by group or tag
-- Search by name, comment, or tag
-- Sort content by various criteria
+## Prerequisites
 
-### Statistics Dashboard
+- Node.js 18+
+- [pnpm](https://pnpm.io/) (recommended)
+- Python 3.9+ (for the palette API)
 
-- View total counts of images and palettes
-- Track favorite items
-- Monitor tag usage statistics
-- Analyze group distribution
-- Track popular tags and groups
-
-### Additional Features
-
-- Export palettes in JSON format
-- Import palettes from JSON files
-- Color extraction from images
-- AI-powered palette generation (FastAPI backend)
-- Responsive design
-- Dark mode support
-- Offline support via localStorage
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18.x or later
-- pnpm (recommended) or npm
-- Python 3.9+ (for the backend API)
-
-### Installation
-
-1. Clone the repository:
+## Setup
 
 ```bash
-git clone https://github.com/yourusername/pallette.git
-cd pallette
-```
-
-2. Install frontend dependencies:
-
-```bash
+git clone https://github.com/rebecagrn/pallette-project.git
+cd pallette-project
 pnpm install
-```
-
-3. Configure environment:
-
-```bash
 cp .env.example .env.local
 ```
 
-4. Start both frontend and backend:
+One-time backend setup:
 
 ```bash
-# One-time backend setup
-cd backend && python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt -r requirements-dev.txt
+cd backend
+python -m venv .venv
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
 cp .env.example .env
 cd ..
+```
 
-# Run both services
-pnpm install
+Optional — GPT palettes: add `OPENAI_API_KEY` to `backend/.env`.
+
+Run both apps:
+
+```bash
 pnpm dev:all
 ```
 
-Or run them separately:
+Or separately:
 
 ```bash
-# Terminal 1 — backend
-pnpm dev:backend
-
-# Terminal 2 — frontend
-pnpm dev
+pnpm dev:backend   # FastAPI on http://localhost:8000
+pnpm dev           # Next.js on http://localhost:3000
 ```
 
-Optional: add `OPENAI_API_KEY` to `backend/.env` for GPT-powered palettes.
+Open [http://localhost:3000](http://localhost:3000).
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+| Env file | Variable | Purpose |
+| --- | --- | --- |
+| `.env.local` | `PALETTE_API_URL` | FastAPI origin used by Next.js route handlers (default `http://localhost:8000`) |
+| `backend/.env` | `OPENAI_API_KEY` | Enables GPT generation; empty = fallback |
+| `backend/.env` | `CORS_ORIGINS` | Allowed frontend origins |
 
-Go to **Palettes → AI Generator** to create palettes from text prompts, or use the **sparkles icon** on any image in the Generator to create an AI-enhanced palette from extracted colors.
+## Scripts
 
-## Project Structure
+| Command | Description |
+| --- | --- |
+| `pnpm dev` | Next.js dev server |
+| `pnpm dev:backend` | FastAPI with reload |
+| `pnpm dev:all` | Frontend + backend together |
+| `pnpm build` / `pnpm start` | Production frontend |
+| `pnpm lint` | ESLint |
+| `pnpm test` | Jest |
+| `pnpm test:backend` | pytest |
+
+FastAPI docs: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+## How AI generation works
+
+1. The UI posts to `/api/palettes/generate`.
+2. Next.js validates the body (Zod) and forwards it to FastAPI.
+3. FastAPI calls OpenAI when a key is set, otherwise builds a palette from mood/style heuristics.
+4. Generate is rate-limited (20 requests / minute / IP).
+
+Typical payload:
+
+```json
+{
+  "prompt": "cozy coffee shop brand with warm earthy tones",
+  "mood": "warm",
+  "style": "minimal",
+  "color_count": 5,
+  "base_colors": ["#8B4513"]
+}
+```
+
+From **Generator**, **AI Enhance** on an image card sends extracted colors as `base_colors`. From **Palettes → AI**, you describe the palette in text.
+
+## Project layout
 
 ```
-backend/                  # FastAPI AI palette API
+backend/                 FastAPI app (routers, schemas, AI service)
 src/
-├── app/                    # Next.js app router
-├── components/            # React components
-│   ├── common/           # Shared components
-│   ├── images-module/    # Image-related components
-│   ├── palettes-module/  # Palette-related components
-│   ├── dashboard/        # Statistics dashboard components
-│   └── layout/           # Layout components
-├── lib/                   # Utility functions
-├── store/                # Zustand store
-├── types/                # TypeScript types
-└── styles/               # Global styles
+├── app/                  Pages and API route handlers
+├── components/
+│   ├── dashboard-module/
+│   ├── images-module/
+│   ├── palettes-module/
+│   ├── layout/
+│   ├── shared/
+│   └── ui/
+├── lib/                  Color extraction, palette API client
+├── store/                Zustand persist store
+├── types/
+└── validations/          Zod schemas for the proxy
 ```
 
-## Technical Stack
+## Limitations
 
-- **Framework**: Next.js 14
-- **Backend**: FastAPI (Python)
-- **Language**: TypeScript
-- **State Management**: Zustand
-- **Styling**: Tailwind CSS
-- **UI Components**: Shadcn/ui
-- **Color Processing**: ColorThief
-- **Data Persistence**: LocalStorage
-
-## Development
-
-### Running Tests
-
-```bash
-pnpm test              # Frontend (Jest)
-pnpm test:backend      # Backend (pytest)
-```
-
-### Code Style
-
-```bash
-pnpm lint
-```
-
-## API Architecture
-
-The Next.js app proxies palette requests through `/api/palettes/*` routes, keeping the FastAPI backend URL server-side (`PALETTE_API_URL`). This avoids CORS issues and works in production when frontend and backend are deployed separately.
-
-## Known Limitations
-
-- Data is stored locally in the browser
-- Limited image processing capabilities
-- Backend required for AI palette generation
-- No user authentication
-- No collaborative features
-
-## Future Improvements
-
-### Planned Features
-
-- User authentication
-- Collaborative features
-- Advanced color editor
-- Social sharing
-- Mobile app version
-
-### Performance Optimizations
-
-- Server-side rendering
-- Image optimization
-- Caching strategies
-- Progressive web app support
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+- No accounts — everything is local to the browser
+- Blob URLs from file upload do not survive a refresh
+- AI needs the FastAPI process running
+- No auth on the generate endpoint (rate limit only)
+- Dark-mode tokens exist in CSS; there is no theme switch yet
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- [Next.js](https://nextjs.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Shadcn/ui](https://ui.shadcn.com/)
-- [Zustand](https://github.com/pmndrs/zustand)
-- [ColorThief](https://github.com/lokesh/color-thief)
+MIT
