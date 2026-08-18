@@ -4,12 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:backend": "cd backend && .venv/bin/uvicorn app.main:app --reload --port 8000",
+    "dev:all": "concurrently -n frontend,backend -c blue,green \"pnpm dev\" \"pnpm dev:backend\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "test:backend": "cd backend && .venv/bin/pytest -q"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
@@ -52,6 +55,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "concurrently": "^9.1.2"
   }
 }

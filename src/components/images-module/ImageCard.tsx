@@ -2,12 +2,13 @@ import { ImageProps, CommentProps } from "@/types";
 import { useState, memo } from "react";
 import { useStore } from "@/store/appStore";
 import { Button } from "../ui/button";
-import { Trash2, Heart, Palette } from "lucide-react";
+import { Trash2, Heart, Palette, Sparkles } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import { Badge } from "../ui/badge";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import CommentSection from "../shared/CommentSection";
 import { extractColors } from "@/lib/colorExtractor";
+import { generatePaletteWithAi, PaletteApiError } from "@/lib/paletteApi";
 import { showSuccessToast, showErrorToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +25,7 @@ const ImageCard = memo(function ImageCard({
 }: ImageCardProps) {
   const [isEditing] = useState(false);
   const [isExtracting, setIsExtracting] = useState(false);
+  const [isEnhancing, setIsEnhancing] = useState(false);
   const [comment, setComment] = useState("");
   const { tags, groups, addPalette } = useStore();
 
@@ -73,6 +75,50 @@ const ImageCard = memo(function ImageCard({
     }
   };
 
+  const handleAiEnhance = async () => {
+    setIsEnhancing(true);
+    try {
+      const baseColors = await extractColors(image.url);
+      const imageLabel = image.url.split("/").pop() || "image";
+      const response = await generatePaletteWithAi({
+        prompt: `Harmonious color palette inspired by this image (${imageLabel})`,
+        base_colors: baseColors,
+        color_count: 5,
+      });
+
+      addPalette({
+        name: response.palette.name,
+        colors: response.palette.colors,
+        tagIds: image.tagIds,
+        groupIds: image.groupIds,
+        comments: [
+          {
+            id: crypto.randomUUID(),
+            imageId: image.id,
+            text: response.palette.description,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+        ],
+        isFavorite: false,
+      });
+
+      showSuccessToast(
+        response.palette.source === "ai"
+          ? "AI palette created from image"
+          : "Enhanced palette created from image"
+      );
+    } catch (error) {
+      const message =
+        error instanceof PaletteApiError
+          ? error.message
+          : "Failed to generate AI palette from image";
+      showErrorToast(message);
+    } finally {
+      setIsEnhancing(false);
+    }
+  };
+
   const handleToggleFavorite = () => {
     onEdit(image.id, {
       isFavorite: !image.isFavorite,
@@ -102,10 +148,23 @@ const ImageCard = memo(function ImageCard({
             variant="ghost"
             size="icon"
             onClick={handleExtractColors}
-            disabled={isExtracting}
+            disabled={isExtracting || isEnhancing}
             className="h-8 w-8"
+            aria-label="Extract colors from image"
+            title="Extract colors"
           >
             <Palette className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleAiEnhance}
+            disabled={isExtracting || isEnhancing}
+            className="h-8 w-8"
+            aria-label="Generate AI palette from image"
+            title="AI enhance"
+          >
+            <Sparkles className={cn("h-4 w-4", isEnhancing && "animate-pulse")} />
           </Button>
           <Button
             variant="ghost"

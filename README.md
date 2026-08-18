@@ -86,27 +86,35 @@ pnpm install
 cp .env.example .env.local
 ```
 
-4. Start the FastAPI backend (optional but required for AI generation):
+4. Start both frontend and backend:
 
 ```bash
-cd backend
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+# One-time backend setup
+cd backend && python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt -r requirements-dev.txt
 cp .env.example .env
-# Optional: add OPENAI_API_KEY to backend/.env for GPT-powered palettes
-uvicorn app.main:app --reload --port 8000
+cd ..
+
+# Run both services
+pnpm install
+pnpm dev:all
 ```
 
-5. Run the development server:
+Or run them separately:
 
 ```bash
+# Terminal 1 — backend
+pnpm dev:backend
+
+# Terminal 2 — frontend
 pnpm dev
 ```
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser.
+Optional: add `OPENAI_API_KEY` to `backend/.env` for GPT-powered palettes.
 
-Go to **Palettes → AI Generator** to create palettes from text prompts.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+Go to **Palettes → AI Generator** to create palettes from text prompts, or use the **sparkles icon** on any image in the Generator to create an AI-enhanced palette from extracted colors.
 
 ## Project Structure
 
@@ -142,7 +150,8 @@ src/
 ### Running Tests
 
 ```bash
-pnpm test
+pnpm test              # Frontend (Jest)
+pnpm test:backend      # Backend (pytest)
 ```
 
 ### Code Style
@@ -150,6 +159,10 @@ pnpm test
 ```bash
 pnpm lint
 ```
+
+## API Architecture
+
+The Next.js app proxies palette requests through `/api/palettes/*` routes, keeping the FastAPI backend URL server-side (`PALETTE_API_URL`). This avoids CORS issues and works in production when frontend and backend are deployed separately.
 
 ## Known Limitations
 

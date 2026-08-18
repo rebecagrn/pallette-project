@@ -4,8 +4,7 @@ import {
   PaletteHealthResponse,
 } from "@/types/palette-api"
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
+const API_BASE_URL = "/api/palettes"
 
 class PaletteApiError extends Error {
   constructor(
@@ -39,14 +38,14 @@ async function handleResponse<T>(response: Response): Promise<T> {
 }
 
 export async function checkPaletteApiHealth(): Promise<PaletteHealthResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/palettes/health`)
+  const response = await fetch(`${API_BASE_URL}/health`)
   return handleResponse<PaletteHealthResponse>(response)
 }
 
 export async function generatePaletteWithAi(
   request: GeneratePaletteRequest
 ): Promise<GeneratePaletteResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/palettes/generate`, {
+  const response = await fetch(`${API_BASE_URL}/generate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(request),
