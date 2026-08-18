@@ -14,7 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { showErrorToast, showSuccessToast } from "@/lib/toast"
 import {
@@ -153,22 +152,24 @@ export function AiPaletteGenerator({ onSaved }: AiPaletteGeneratorProps) {
   }
 
   return (
-    <div className="space-y-6">
-      <Card className="surface-card">
-        <CardHeader>
-          <div className="flex items-center justify-between gap-4">
-            <CardTitle className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5" />
-              AI Palette Generator
-            </CardTitle>
-            {isAiEnabled !== null && (
-              <Badge variant={isAiEnabled ? "default" : "secondary"}>
-                {isAiEnabled ? "GPT enabled" : "Rule-based mode"}
-              </Badge>
-            )}
+    <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] items-start">
+      <div className="surface-card p-5 sm:p-6 space-y-4">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="flex items-center gap-2 text-lg font-semibold">
+              <Sparkles className="h-5 w-5 text-primary" />
+              AI generator
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Describe a mood, brand, or scene and get a palette back.
+            </p>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
+          {isAiEnabled !== null && (
+            <Badge variant={isAiEnabled ? "default" : "secondary"}>
+              {isAiEnabled ? "GPT enabled" : "Rule-based"}
+            </Badge>
+          )}
+        </div>
           <div className="space-y-2">
             <Label htmlFor="ai-prompt">Describe your palette</Label>
             <Textarea
@@ -269,15 +270,14 @@ export function AiPaletteGenerator({ onSaved }: AiPaletteGeneratorProps) {
               </>
             )}
           </Button>
-        </CardContent>
-      </Card>
+      </div>
 
-      {generatedPalette && (
-        <Card className="surface-card">
-          <CardHeader>
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <CardTitle>{generatedPalette.name}</CardTitle>
+      <div className="surface-card p-5 sm:p-6 min-h-[280px] flex flex-col">
+        {generatedPalette ? (
+          <div className="space-y-4 flex-1 flex flex-col">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h3 className="font-semibold truncate">{generatedPalette.name}</h3>
                 <p className="text-sm text-muted-foreground mt-1">
                   {generatedPalette.description}
                 </p>
@@ -286,9 +286,7 @@ export function AiPaletteGenerator({ onSaved }: AiPaletteGeneratorProps) {
                 {generatedPalette.source === "ai" ? "AI" : "Fallback"}
               </Badge>
             </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex h-24 rounded-lg overflow-hidden border">
+            <div className="flex h-28 rounded-xl overflow-hidden border">
               {generatedPalette.colors.map((color, index) => (
                 <div
                   key={`${color}-${index}`}
@@ -296,14 +294,13 @@ export function AiPaletteGenerator({ onSaved }: AiPaletteGeneratorProps) {
                   style={{ backgroundColor: color }}
                   title={color}
                 >
-                  <span className="text-[10px] font-mono bg-black/40 text-white px-1 py-0.5 rounded self-start">
+                  <span className="text-[10px] font-mono bg-black/40 text-white px-1 py-0.5 rounded self-start truncate">
                     {color}
                   </span>
                 </div>
               ))}
             </div>
-
-            <div className="flex gap-2">
+            <div className="flex gap-2 mt-auto">
               <Button
                 type="button"
                 onClick={handleSavePalette}
@@ -315,7 +312,7 @@ export function AiPaletteGenerator({ onSaved }: AiPaletteGeneratorProps) {
                 ) : (
                   <Save className="mr-2 h-4 w-4" />
                 )}
-                Save to Collection
+                Save
               </Button>
               <Button
                 type="button"
@@ -324,12 +321,19 @@ export function AiPaletteGenerator({ onSaved }: AiPaletteGeneratorProps) {
                 disabled={isGenerating}
               >
                 <RefreshCw className="mr-2 h-4 w-4" />
-                Regenerate
+                Retry
               </Button>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        ) : (
+          <div className="flex flex-1 flex-col items-center justify-center text-center py-10 text-muted-foreground">
+            <Sparkles className="h-8 w-8 mb-3 opacity-40" />
+            <p className="text-sm max-w-[220px]">
+              Your generated palette will show up here.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

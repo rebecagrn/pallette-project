@@ -5,13 +5,15 @@ import { ColorPaletteProps } from "@/types";
 import { showSuccessToast, showErrorToast } from "@/lib/toast";
 
 interface ExportImportPaletteProps {
-  palette: ColorPaletteProps;
-  onImport: (palette: Partial<ColorPaletteProps>) => void;
+  palette: ColorPaletteProps
+  onImport: (palette: Partial<ColorPaletteProps>) => void
+  compact?: boolean
 }
 
 export default function ExportImportPalette({
   palette,
   onImport,
+  compact = false,
 }: ExportImportPaletteProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -81,24 +83,26 @@ export default function ExportImportPalette({
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-0.5">
       <Button
-        variant="outline"
-        size="sm"
+        variant={compact ? "ghost" : "outline"}
+        size={compact ? "icon" : "sm"}
         onClick={handleExport}
-        className="flex items-center gap-2"
+        className={compact ? "h-8 w-8" : "flex items-center gap-2"}
+        aria-label="Export palette"
       >
         <Download className="h-4 w-4" />
-        Export
+        {!compact && "Export"}
       </Button>
       <Button
-        variant="outline"
-        size="sm"
+        variant={compact ? "ghost" : "outline"}
+        size={compact ? "icon" : "sm"}
         onClick={() => fileInputRef.current?.click()}
-        className="flex items-center gap-2"
+        className={compact ? "h-8 w-8" : "flex items-center gap-2"}
+        aria-label="Import palette"
       >
         <Upload className="h-4 w-4" />
-        Import
+        {!compact && "Import"}
       </Button>
       <input
         type="file"
@@ -108,5 +112,5 @@ export default function ExportImportPalette({
         className="hidden"
       />
     </div>
-  );
+  )
 }

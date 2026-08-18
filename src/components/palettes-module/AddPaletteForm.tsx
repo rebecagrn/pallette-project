@@ -1,103 +1,101 @@
-import { useState } from "react";
-import { useStore } from "@/store/appStore";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { showSuccessToast, showErrorToast } from "@/lib/toast";
+import { useState } from "react"
+import { useStore } from "@/store/appStore"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Badge } from "@/components/ui/badge"
+import { showSuccessToast, showErrorToast } from "@/lib/toast"
 
 interface AddPaletteFormProps {
-  onSuccess?: () => void;
+  onSuccess?: () => void
 }
 
 export default function AddPaletteForm({ onSuccess }: AddPaletteFormProps) {
-  const [name, setName] = useState("");
-  const [colors, setColors] = useState<string[]>([]);
-  const [newColor, setNewColor] = useState("");
-  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState("");
-  const { addPalette, tags, addTag } = useStore();
+  const [name, setName] = useState("")
+  const [colors, setColors] = useState<string[]>([])
+  const [newColor, setNewColor] = useState("#2E8BC0")
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([])
+  const [tagInput, setTagInput] = useState("")
+  const { addPalette, tags, addTag } = useStore()
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     if (!name.trim()) {
-      showErrorToast("Please enter a palette name");
-      return;
+      showErrorToast("Please enter a palette name")
+      return
     }
-
     if (colors.length === 0) {
-      showErrorToast("Please add at least one color");
-      return;
+      showErrorToast("Please add at least one color")
+      return
     }
-
-    try {
-      addPalette({
-        name,
-        colors,
-        tagIds: selectedTagIds,
-        groupIds: [],
-        comments: [],
-        isFavorite: false,
-      });
-
-      showSuccessToast("Palette created successfully");
-      setName("");
-      setColors([]);
-      setSelectedTagIds([]);
-      setTagInput("");
-      onSuccess?.();
-    } catch (error) {
-      showErrorToast("Failed to create palette");
-    }
-  };
+    addPalette({
+      name,
+      colors,
+      tagIds: selectedTagIds,
+      groupIds: [],
+      comments: [],
+      isFavorite: false,
+    })
+    showSuccessToast("Palette created successfully")
+    setName("")
+    setColors([])
+    setSelectedTagIds([])
+    setTagInput("")
+    onSuccess?.()
+  }
 
   const handleAddColor = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newColor.trim()) return;
-
-    setColors([...colors, newColor]);
-    setNewColor("");
-  };
+    e.preventDefault()
+    if (!newColor.trim()) return
+    setColors([...colors, newColor.toUpperCase()])
+  }
 
   const handleRemoveColor = (index: number) => {
-    setColors(colors.filter((_, i) => i !== index));
-  };
+    setColors(colors.filter((_, i) => i !== index))
+  }
 
   const handleAddTag = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!tagInput.trim()) return;
-
-    const newTagName = tagInput.trim();
+    e.preventDefault()
+    if (!tagInput.trim()) return
+    const newTagName = tagInput.trim()
     const existingTag = tags.find(
       (tag) => tag.name.toLowerCase() === newTagName.toLowerCase()
-    );
-
+    )
     if (existingTag) {
       if (!selectedTagIds.includes(existingTag.id)) {
-        setSelectedTagIds([...selectedTagIds, existingTag.id]);
-        setTagInput("");
+        setSelectedTagIds([...selectedTagIds, existingTag.id])
+        setTagInput("")
       } else {
-        showErrorToast("This tag is already added to the palette");
+        showErrorToast("This tag is already added to the palette")
       }
-    } else {
-      const newTagId = addTag(newTagName)
-      setSelectedTagIds([...selectedTagIds, newTagId])
-      setTagInput("")
+      return
     }
-  };
-
-  const handleRemoveTag = (tagId: string) => {
-    setSelectedTagIds(selectedTagIds.filter((id) => id !== tagId));
-  };
+    const newTagId = addTag(newTagName)
+    setSelectedTagIds([...selectedTagIds, newTagId])
+    setTagInput("")
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
+      {colors.length > 0 && (
+        <div className="flex h-14 overflow-hidden rounded-xl border">
+          {colors.map((color, index) => (
+            <div
+              key={`${color}-${index}`}
+              className="flex-1"
+              style={{ backgroundColor: color }}
+            />
+          ))}
+        </div>
+      )}
+
       <div className="space-y-2">
-        <Label htmlFor="name">Palette Name</Label>
+        <Label htmlFor="name">Palette name</Label>
         <Input
           id="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Enter palette name"
+          placeholder="Sunset brand kit"
           required
         />
       </div>
@@ -109,38 +107,39 @@ export default function AddPaletteForm({ onSuccess }: AddPaletteFormProps) {
             type="color"
             value={newColor}
             onChange={(e) => setNewColor(e.target.value)}
-            className="w-20 h-10 p-1"
+            className="w-14 h-10 p-1 cursor-pointer"
+            aria-label="Pick a color"
           />
-          <Button
-            type="button"
-            onClick={handleAddColor}
-          >
-            Add Color
+          <Input
+            value={newColor}
+            onChange={(e) => setNewColor(e.target.value)}
+            placeholder="#2E8BC0"
+            className="font-mono uppercase"
+          />
+          <Button type="button" onClick={handleAddColor} variant="secondary">
+            Add
           </Button>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {colors.map((color, index) => (
-            <div
-              key={index}
-              className="flex items-center gap-2 bg-secondary px-2 py-1 rounded-md"
-            >
-              <div
-                className="w-4 h-4 rounded-full"
-                style={{ backgroundColor: color }}
-              />
-              <span className="text-sm">{color}</span>
-              <Button
+        {colors.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {colors.map((color, index) => (
+              <button
+                key={`${color}-${index}`}
                 type="button"
-                variant="ghost"
-                size="sm"
                 onClick={() => handleRemoveColor(index)}
-                className="h-6 w-6 p-0"
+                className="flex items-center gap-2 rounded-full border bg-background px-2.5 py-1 text-xs font-mono hover:border-destructive"
+                aria-label={`Remove ${color}`}
               >
-                ×
-              </Button>
-            </div>
-          ))}
-        </div>
+                <span
+                  className="h-3 w-3 rounded-full border"
+                  style={{ backgroundColor: color }}
+                />
+                {color}
+                <span className="text-muted-foreground">×</span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -151,58 +150,40 @@ export default function AddPaletteForm({ onSuccess }: AddPaletteFormProps) {
             value={tagInput}
             onChange={(e) => setTagInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAddTag(e)}
-            placeholder="Add tags (press Enter)"
+            placeholder="Add tags"
             className="flex-1"
           />
-          <Button
-            type="button"
-            onClick={handleAddTag}
-          >
+          <Button type="button" onClick={handleAddTag} variant="secondary">
             Add
           </Button>
         </div>
-        <div className="space-y-2">
+        {tags.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {tags.map((tag) => (
-              <div
+              <Badge
                 key={tag.id}
-                className={`flex items-center gap-1 px-2 py-1 rounded-md cursor-pointer transition-colors ${
-                  selectedTagIds.includes(tag.id)
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary"
-                }`}
+                variant={
+                  selectedTagIds.includes(tag.id) ? "default" : "outline"
+                }
+                className="cursor-pointer"
                 onClick={() => {
-                  if (selectedTagIds.includes(tag.id)) {
-                    handleRemoveTag(tag.id);
-                  } else {
-                    setSelectedTagIds([...selectedTagIds, tag.id]);
-                  }
+                  setSelectedTagIds((current) =>
+                    current.includes(tag.id)
+                      ? current.filter((id) => id !== tag.id)
+                      : [...current, tag.id]
+                  )
                 }}
               >
-                <span className="text-sm">{tag.name}</span>
-                {selectedTagIds.includes(tag.id) && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleRemoveTag(tag.id);
-                    }}
-                    className="h-6 w-6 p-0"
-                  >
-                    ×
-                  </Button>
-                )}
-              </div>
+                {tag.name}
+              </Badge>
             ))}
           </div>
-        </div>
+        )}
       </div>
 
       <Button type="submit" className="w-full">
-        Create Palette
+        Create palette
       </Button>
     </form>
-  );
+  )
 }
